@@ -10,13 +10,18 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ec-code-assist" is now active!');
 
+	registerCOmmands(context);
+}
+
+/**
+ * Register the commands for the extension
+ * @param context 
+ */
+function registerCOmmands(context: vscode.ExtensionContext) {
+
 	let disposable: vscode.Disposable;
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
 	disposable = vscode.commands.registerCommand('ec-code-assist.helloWorld', () => {
-
 		vscode.window.showInformationMessage('Hello World from EC Code Assist!');
 	});
 
