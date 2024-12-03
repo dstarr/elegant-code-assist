@@ -1,6 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { Command } from './commands/command';
+import { HelloWorldCommand } from './commands/helloWorldCommand';
+
+let commands: { [id: string]: Command; } = {};
+
+registerCommands(commands);
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -10,23 +16,32 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ec-code-assist" is now active!');
 
-	registerCOmmands(context);
+	registerCommandEvents(context);
+}
+
+function registerCommands(commands: { [id: string]: Command; }) {
+
+	let helloWorldCommand = new HelloWorldCommand();
+	commands[helloWorldCommand.name] = helloWorldCommand;
 }
 
 /**
- * Register the commands for the extension
+ * Register the command events for the extension
  * @param context 
  */
-function registerCOmmands(context: vscode.ExtensionContext) {
+function registerCommandEvents(context: vscode.ExtensionContext) {
 
 	let disposable: vscode.Disposable;
 
-	disposable = vscode.commands.registerCommand('ec-code-assist.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World from EC Code Assist!');
-	});
+	// iterate through the commands and register them
+	for (let key in commands) {
+		let command = commands[key];
+		disposable = vscode.commands.registerCommand(command.name, () => {
+			command.execute(context);
+		});
 
-	context.subscriptions.push(disposable);
-
+		context.subscriptions.push(disposable);
+	}
 
 	// register a command that pulls the code in the current editor
 	disposable = vscode.commands.registerCommand('ec-code-assist.showSelectedCode', () => {
