@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
-import { Command } from './command';
+import { Command } from './Command';
 
 export class ShowSelectedCodeCommand implements Command {
     
 	// The command identifier
     readonly name: string = 'ec-code-assist.showSelectedCode';
 
-    execute(context: vscode.ExtensionContext, args?: string[]): void {
+    execute(): void {
      
         const editor = vscode.window.activeTextEditor;
 

@@ -18,6 +18,7 @@ export class CommandRegistrar {
      * @param context 
      */
     public registerCommandEvents(context: vscode.ExtensionContext) {
+        
         let command: Command;
 
         // Hello World command
@@ -32,7 +33,7 @@ export class CommandRegistrar {
         for (let key in this.commands) {
             let command = this.commands[key];
             let disposable = vscode.commands.registerCommand(command.name, () => {
-                command.execute(context);
+                command.execute();
             });
 
             context.subscriptions.push(disposable);

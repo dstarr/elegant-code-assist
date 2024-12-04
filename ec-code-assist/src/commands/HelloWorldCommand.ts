@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { Command } from './command';
+import { Command } from './Command';
 
 export class HelloWorldCommand implements Command {
     
     readonly name: string = 'ec-code-assist.helloWorld';
 
-    execute(context: vscode.ExtensionContext, args?: string[]): void {
+    execute(): void {
         vscode.window.showInformationMessage('Hello World from EC Code Assist command!');
     }
 }
