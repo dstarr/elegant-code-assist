@@ -21,7 +21,16 @@
         "command": "ec-code-assist.showSelectedCode",
         "title": "EC: Show Selected Code"
       }
-    ]
+    ],
+    "views": {
+			"explorer": [
+				{
+					"type": "webview",
+					"id": "ec-code-assist.selectedCodeView",
+					"name": "Selected Code View"
+				}
+			]
+		}
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
