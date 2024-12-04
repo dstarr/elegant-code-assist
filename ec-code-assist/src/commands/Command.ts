@@ -1,6 +1,11 @@
-import * as vscode from 'vscode';
-
+/**
+ * The interface used for Commands
+ */
 export interface Command {
-    execute(): void;
+
+    // The command identifier
     name: string;
+
+    // The command execution logic
+    execute(): void;
 }

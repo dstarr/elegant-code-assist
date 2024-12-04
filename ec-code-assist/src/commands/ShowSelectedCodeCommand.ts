@@ -3,10 +3,9 @@ import { Command } from './Command';
 
 export class ShowSelectedCodeCommand implements Command {
     
-	// The command identifier
-    readonly name: string = 'ec-code-assist.showSelectedCode';
+	public readonly name: string  = 'ec-code-assist.showSelectedCode';
 
-    execute(): void {
+    public execute(): void {
      
         const editor = vscode.window.activeTextEditor;
 
@@ -20,6 +19,9 @@ export class ShowSelectedCodeCommand implements Command {
 				const text = document.getText(selection);
 				vscode.window.showInformationMessage('Selected text is: ' + text);
 			}
+		} else {
+			vscode.window.showInformationMessage('No text editor open');
 		}
+	
     }
 }
