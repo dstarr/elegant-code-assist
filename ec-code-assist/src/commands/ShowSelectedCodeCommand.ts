@@ -21,7 +21,7 @@ export class ShowSelectedCodeCommand implements Command {
 			const selection = editor.selection;
 
 			if (selection.isEmpty) {
-				vscode.window.showInformationMessage('No text selected');
+				vscode.window.showErrorMessage('No text selected');
 			} else {
 				const text = document.getText(selection);
 				this.viewProvider.showCode(text);

@@ -38,9 +38,12 @@ export class SelectedCodeViewProvider implements vscode.WebviewViewProvider {
 			localResourceRoots: [this.extensionUri]
 		};
 
-		this.view.webview.html = this.getWebviewContent();
+		this.view.webview.html = this.getWebviewContent(this.view.webview);
 
 		this.view.webview.onDidReceiveMessage(message => {
+
+			vscode.window.showInformationMessage('Received message from Webview: ' + message.command);
+			
 			switch (message.command) {
 				case 'alert':
 					vscode.window.showErrorMessage(message.text);
@@ -49,7 +52,8 @@ export class SelectedCodeViewProvider implements vscode.WebviewViewProvider {
 		});
 	}
 
-	private getWebviewContent(): string {
+	private getWebviewContent(webView: vscode.Webview): string {
+	
 		return `<!DOCTYPE html>
             <html lang="en">
             <head>
