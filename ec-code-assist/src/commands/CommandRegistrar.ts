@@ -1,6 +1,7 @@
 // a class that registers all the commands with the VS Code context
 import * as vscode from 'vscode';
 import { Command, HelloWorldCommand, ShowSelectedCodeCommand } from './index';
+import { SelectedCodeViewProvider } from '../views/SelectedCodeViewProvider';
 
 /**
  * A class that registers all the commands with the VS Code context
@@ -17,7 +18,7 @@ export class CommandRegistrar {
      * Register the command events for the extension
      * @param context 
      */
-    public registerCommandEvents(context: vscode.ExtensionContext) {
+    public registerCommandEvents(context: vscode.ExtensionContext, selectedCodeViewProvider : SelectedCodeViewProvider): void {
         
         let command: Command;
 
@@ -26,7 +27,7 @@ export class CommandRegistrar {
         this.commands[command.name] = command;
 
         // Show Selected Code command
-        command = new ShowSelectedCodeCommand();
+        command = new ShowSelectedCodeCommand(selectedCodeViewProvider);
         this.commands[command.name] = command;
 
         // iterate through the commands and register them with VS Code

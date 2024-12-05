@@ -27,7 +27,7 @@
 				{
 					"type": "webview",
 					"id": "ec-code-assist.selectedCodeView",
-					"name": "Selected Code View"
+					"name": "EC: Selected Code View"
 				}
 			]
 		}
