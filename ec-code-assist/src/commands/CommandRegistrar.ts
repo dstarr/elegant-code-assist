@@ -1,7 +1,6 @@
 // a class that registers all the commands with the VS Code context
 import * as vscode from 'vscode';
 import { Command, HelloWorldCommand, ShowSelectedCodeCommand } from './index';
-import { SelectedCodeViewProvider } from '../views/SelectedCodeViewProvider';
 
 /**
  * A class that registers all the commands with the VS Code context

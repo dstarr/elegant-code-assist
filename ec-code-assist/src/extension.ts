@@ -2,8 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { CommandRegistrar } from './commands/CommandRegistrar';
-import { SelectedCodeViewProvider } from './views/SelectedCodeViewProvider';
-import { ShowSelectedCodeCommand } from './commands';
 
 /**
  * This method is called when your extension is activated
