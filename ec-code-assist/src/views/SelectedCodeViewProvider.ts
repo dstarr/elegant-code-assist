@@ -6,7 +6,7 @@ export class SelectedCodeViewProvider implements vscode.WebviewViewProvider {
 
 	private readonly extensionUri: vscode.Uri;
 
-	public static readonly viewType = 'ec-code-assist.selectedCodeView';
+	public static readonly viewType = 'ec-assist.selectedCodeView';
 
 	constructor(extensionUri: vscode.Uri) {
 		this.extensionUri = extensionUri;

@@ -4,7 +4,7 @@ import { SelectedCodeViewProvider } from '../views/SelectedCodeViewProvider';
 
 export class ShowSelectedCodeCommand implements Command {
 
-	public readonly name: string  = 'ec-code-assist.showSelectedCode';
+	public readonly name: string  = 'ec-assist.showSelectedCode';
 	
 	private viewProvider: SelectedCodeViewProvider;
 	

@@ -1,6 +1,6 @@
 {
   "name": "ec-code-assist",
-  "displayName": "EC Code Assist",
+  "displayName": "Elegant Code Assist",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -14,11 +14,11 @@
   "contributes": {
     "commands": [
       {
-        "command": "ec-code-assist.helloWorld",
+        "command": "ec-assist.helloWorld",
         "title": "EC: Hello World"
       },
       {
-        "command": "ec-code-assist.showSelectedCode",
+        "command": "ec-assist.showSelectedCode",
         "title": "EC: Show Selected Code"
       }
     ],
@@ -26,7 +26,7 @@
 			"explorer": [
 				{
 					"type": "webview",
-					"id": "ec-code-assist.selectedCodeView",
+					"id": "ec-assist.selectedCodeView",
 					"name": "EC: Selected Code View"
 				}
 			]
