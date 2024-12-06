@@ -1,2 +1,2 @@
-# ec-code-assist
+# Elegant Code Assist
 Experimental
