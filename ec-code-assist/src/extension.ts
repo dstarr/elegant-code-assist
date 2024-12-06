@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { CommandRegistrar } from './commands/CommandRegistrar';
 import { SelectedCodeViewProvider } from './views/SelectedCodeViewProvider';
+import { ShowSelectedCodeCommand } from './commands';
 
 /**
  * This method is called when your extension is activated
@@ -13,15 +14,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Congratulations, EC Code Assist" is now active!');
 
-	// Create the webview panel
-	const provider = new SelectedCodeViewProvider(context.extensionUri);
-	context.subscriptions.push(vscode.window.registerWebviewViewProvider(SelectedCodeViewProvider.viewType, provider));
-
 	// Register the command events for the extension
 	let commandRegistrar = new CommandRegistrar();
-	commandRegistrar.registerCommandEvents(context, provider);
+	commandRegistrar.registerCommandEvents(context);
 
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() { }
+
+

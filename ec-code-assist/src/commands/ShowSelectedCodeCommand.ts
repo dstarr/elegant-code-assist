@@ -1,20 +1,32 @@
 import * as vscode from 'vscode';
 import { Command } from './Command';
-import { SelectedCodeViewProvider } from '../views/SelectedCodeViewProvider';
 
 export class ShowSelectedCodeCommand implements Command {
 
-	public readonly name: string  = 'ec-assist.showSelectedCode';
-	
-	private viewProvider: SelectedCodeViewProvider;
-	
-	constructor(selectedCodeViewProvider: SelectedCodeViewProvider) { 
-		this.viewProvider = selectedCodeViewProvider;
-	}
-    
+	public readonly name: string = 'ec-assist.showSelectedCode';
+
 	public execute(): void {
 
-        const editor = vscode.window.activeTextEditor;
+		const panelTitle = 'Elegant Code Assist';
+
+		const options = {
+			enableScripts: true
+		};
+
+		const panel = vscode.window.createWebviewPanel(
+			this.name,
+			panelTitle,
+			vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+			options
+		);
+
+		panel.webview.html = this.getWebviewContent();
+	}
+
+	getWebviewContent(): string {
+
+		const editor = vscode.window.activeTextEditor;
+		let selectedCode = '';
 
 		if (editor) {
 			const document = editor.document;
@@ -22,14 +34,49 @@ export class ShowSelectedCodeCommand implements Command {
 
 			if (selection.isEmpty) {
 				vscode.window.showErrorMessage('No text selected');
+				selectedCode = 'No code selected';
 			} else {
-				const text = document.getText(selection);
-				this.viewProvider.showCode(text);
-				vscode.window.showInformationMessage('Selected text is: ' + text);
+				selectedCode = document.getText(selection);
 			}
-		} else {
-			vscode.window.showInformationMessage('No text editor open');
 		}
+
+		return `
+				<!DOCTYPE html>
+				<html lang="en">
+				<head>
+					<meta charset="UTF-8">
+					<meta name="viewport" content="width=device-width, initial-scale=1.0">
+					<title>Elegant Code Assist</title>
+					<style>
+						body {
+							font-family: Arial, sans-serif;
+							margin: 20px;
+							padding: 20px;
+							background-color: #f4f4f4;
+							border-radius: 8px;
+						}
+							
+						h1 {
+							color: #333;
+						}
+		
+						p {
+							font-size: 16px;
+							line-height: 1.5;
+							color: #666;
+						}
+					</style>
+				</head>
+				<body>
+					<h1>Welcome to Elegant Code Assist</h1>
+					<p>This extension has a long way to go.</p>
+					
+					<p>Selected code:</p>
+					<code>${selectedCode}</code>
 	
-    }
+				</body>
+				</html>
+			`;
+	}
 }
+

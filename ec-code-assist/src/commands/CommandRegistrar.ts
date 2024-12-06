@@ -18,7 +18,7 @@ export class CommandRegistrar {
      * Register the command events for the extension
      * @param context 
      */
-    public registerCommandEvents(context: vscode.ExtensionContext, selectedCodeViewProvider : SelectedCodeViewProvider): void {
+    public registerCommandEvents(context: vscode.ExtensionContext): void {
         
         let command: Command;
 
@@ -27,7 +27,7 @@ export class CommandRegistrar {
         this.commands[command.name] = command;
 
         // Show Selected Code command
-        command = new ShowSelectedCodeCommand(selectedCodeViewProvider);
+        command = new ShowSelectedCodeCommand();
         this.commands[command.name] = command;
 
         // iterate through the commands and register them with VS Code
