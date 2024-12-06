@@ -1,9 +1,18 @@
+
+import * as path from 'path';
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { Command } from './Command';
 
 export class ShowSelectedCodeCommand implements Command {
 
+	private readonly _context: vscode.ExtensionContext;
+	
 	public readonly name: string = 'ec-assist.showSelectedCode';
+
+	constructor(context: vscode.ExtensionContext) { 
+		this._context = context;
+	}
 
 	public execute(): void {
 
@@ -28,48 +37,27 @@ export class ShowSelectedCodeCommand implements Command {
 		const editor = vscode.window.activeTextEditor;
 		let selectedCode = '';
 
+		// ensure a docment is open
 		if (editor) {
 			const document = editor.document;
 			const selection = editor.selection;
 
+			// Get the selected text if any, otherwise, get the entire document text
 			if (selection.isEmpty) {
-				vscode.window.showErrorMessage('No text selected');
-				selectedCode = 'No code selected';
+				selectedCode = document.getText();
 			} else {
 				selectedCode = document.getText(selection);
 			}
+		} else {
+			selectedCode = 'No document is active.';
 		}
 
-		return `
-				<!DOCTYPE html>
-				<html lang="en">
-				<head>
-					<meta charset="UTF-8">
-					<meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<title>Elegant Code Assist</title>
-					<style>
-						body {
-							font-family: Arial, sans-serif;
-							margin: 20px;
-							padding: 20px;
-						}
-							
-						p {
-							font-size: 16px;
-							line-height: 1.5;
-						}
-					</style>
-				</head>
-				<body>
-					<h1>Welcome to Elegant Code Assist</h1>
-					<p>This extension has a long way to go.</p>
-					
-					<p>Selected code:</p>
-					<code>${selectedCode}</code>
-	
-				</body>
-				</html>
-			`;
+		const filePath: vscode.Uri = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'showSelectedCode.html'));
+		
+		let html = fs.readFileSync(filePath.fsPath, 'utf8');
+		html = html.replace('{{selectedCode}}', selectedCode);
+		
+		return html;
 	}
 }
 

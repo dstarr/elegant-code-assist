@@ -26,7 +26,7 @@ export class CommandRegistrar {
         this.commands[command.name] = command;
 
         // Show Selected Code command
-        command = new ShowSelectedCodeCommand();
+        command = new ShowSelectedCodeCommand(context);
         this.commands[command.name] = command;
 
         // iterate through the commands and register them with VS Code
