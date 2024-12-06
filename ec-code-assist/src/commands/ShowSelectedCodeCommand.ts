@@ -52,18 +52,11 @@ export class ShowSelectedCodeCommand implements Command {
 							font-family: Arial, sans-serif;
 							margin: 20px;
 							padding: 20px;
-							background-color: #f4f4f4;
-							border-radius: 8px;
 						}
 							
-						h1 {
-							color: #333;
-						}
-		
 						p {
 							font-size: 16px;
 							line-height: 1.5;
-							color: #666;
 						}
 					</style>
 				</head>
