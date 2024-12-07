@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 export class PlaceholderDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
 	private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem>;
-	onDidChangeTreeData: vscode.Event<any> | undefined;
+	public onDidChangeTreeData: vscode.Event<any> | undefined;
 
 	constructor() {
 		console.debug("PlaceholderDataProvider created");
