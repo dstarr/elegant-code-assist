@@ -1,8 +1,12 @@
-
 import * as path from 'path';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { Command } from './Command';
+
+interface CodeToShow {
+	code: string;
+	language: string;
+}
 
 export class ShowSelectedCodeCommand implements Command {
 
@@ -34,37 +38,45 @@ export class ShowSelectedCodeCommand implements Command {
 
 	private _getWebviewContent(): string {
 
-		const code = this._getCodeToShow();
+		const codeInfo = this._getCodeToShow();
 	
 		const filePath: vscode.Uri = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html'));
 		
 		let html = fs.readFileSync(filePath.fsPath, 'utf8');
-		html = html.replace('{{selectedCode}}', code);
-		
+			html = html.replace('{{code}}', codeInfo.code);
+			html = html.replace('{{language}}', codeInfo.language);
+			
 		return html;
 	}
 
-	private _getCodeToShow(): string {
+	private _getCodeToShow(): CodeToShow {
 
 		const editor = vscode.window.activeTextEditor;
-		let selectedCode: string = '';
+		let code: string = '';
+		let codeLanguage: string = '';
+
 
 		// ensure a docment is open
 		if (editor) {
 			const document = editor.document;
 			const selection = editor.selection;
+			code = editor.document.languageId;
 
-			// Get the selected text if any, otherwise, get the entire document text
 			if (selection.isEmpty) {
-				selectedCode = document.getText();
+				// Get the selected text if any, otherwise, get the entire document text
+				code = document.getText();
 			} else {
-				selectedCode = document.getText(selection);
+				code = document.getText(selection);
 			}
 		} else {
-			selectedCode = 'No document is active.';
+			code = 'No document is active.';
 		}
 
-		return selectedCode.trim();
+		return {
+			code: code.trim(),
+			language: codeLanguage
+		};
+		
 	}
 }
 
