@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { CommandRegistrar } from './commands/CommandRegistrar';
+import { PlaceholderDataProvider, ShowModelsProvider } from './providers';
 
 
 /**
@@ -10,16 +11,29 @@ import { CommandRegistrar } from './commands/CommandRegistrar';
  * @param context: vscode.ExtensionContext
 */
 export function activate(context: vscode.ExtensionContext) {
-	
+
 	console.log('Congratulations, EC Code Assist" is now active!');
-	
+
+	initializeDataProviders();
+
 	// Register the command events for the extension
-	let commandRegistrar = new CommandRegistrar();
+	const commandRegistrar = new CommandRegistrar();
 	commandRegistrar.registerCommandEvents(context);
 
 }
 
+function initializeDataProviders() {
+	const placeholderDataProvider = new PlaceholderDataProvider();
+	vscode.window.registerTreeDataProvider('ec-assist.showModelsView', placeholderDataProvider);
+
+	const showModelsProvider = new ShowModelsProvider();
+	vscode.window.registerTreeDataProvider('ec-assist.showModelsView', showModelsProvider);
+	showModelsProvider.refresh();
+}
+
 // This method is called when your extension is deactivated
 export function deactivate() { }
+
+
 
 

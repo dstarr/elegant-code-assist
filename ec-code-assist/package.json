@@ -25,7 +25,15 @@
         "command": "ec-assist.showModels",
         "title": "EC: Show Available Models"
       }
-    ]
+    ],
+    "views": {
+            "explorer": [
+                {
+                    "id": "ec-assist.showModelsView",
+                    "name": "EC Assist Models"
+                }
+            ]
+        }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
