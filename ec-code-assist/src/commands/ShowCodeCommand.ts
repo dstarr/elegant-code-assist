@@ -17,11 +17,17 @@ interface CodeToShow {
 export class ShowCodeCommand implements Command {
 
 	private readonly _context: vscode.ExtensionContext;
+	private readonly panelTitle: string = 'Elegant Code Assist';
+	private readonly panelOptions: vscode.WebviewOptions = {
+		enableScripts: true
+	};
+	private panel: vscode.WebviewPanel | undefined;
 	
-	public readonly name: string = 'ec-assist.showSelectedCode';
-
-	constructor(context: vscode.ExtensionContext) { 
+	public name: string = 'ec-assist.showSelectedCode';
+	
+	constructor(context: vscode.ExtensionContext) {
 		this._context = context;
+		console.debug('ShowCodeCommand created.');
 	}
 
 	/**
@@ -32,20 +38,29 @@ export class ShowCodeCommand implements Command {
 	 */
 	public execute(): void {
 
-		const panelTitle = 'Elegant Code Assist';
+		console.debug('Executing ShowCodeCommand.');
 
-		const panelOptions = {
-			enableScripts: true
-		};
+		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
-		const panel: vscode.WebviewPanel = vscode.window.createWebviewPanel(
-			this.name,
-			panelTitle,
-			vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-			panelOptions
-		);
-
-		panel.webview.html = this._getWebviewContent();
+		if(this.panel) {
+			this.panel.webview.html = this._getWebviewContent();
+			this.panel.reveal(column);
+			console.debug('Revealed the webview panel.');
+		} else {
+			this.panel = vscode.window.createWebviewPanel(
+				this.name,
+				this.panelTitle,
+				column || vscode.ViewColumn.One,
+				this.panelOptions
+			);
+			this.panel.webview.html = this._getWebviewContent();
+			
+			this.panel.onDidDispose(() => {
+				this.panel = undefined;
+			});
+			console.debug('Created the webview');
+		}
+		
 	}
 
 	/**
@@ -55,14 +70,14 @@ export class ShowCodeCommand implements Command {
 	private _getWebviewContent(): string {
 
 		const codeInfo = this._getCodeToShow();
-	
+
 		const htmlPath: string = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).path;
 
 		let html = fs.readFileSync(htmlPath, 'utf8');
 
 		html = html.replace('{{code}}', codeInfo.code);
 		html = html.replace('{{language}}', codeInfo.language);
-		
+
 		return html;
 	}
 
@@ -95,7 +110,7 @@ export class ShowCodeCommand implements Command {
 			code: code.trim(),
 			language: codeLanguage
 		};
-		
+
 	}
 }
 
