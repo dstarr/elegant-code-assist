@@ -20,6 +20,10 @@
       {
         "command": "ec-assist.showSelectedCode",
         "title": "EC: Show Code"
+      },
+      {
+        "command": "ec-assist.showModels",
+        "title": "EC: Show Available Models"
       }
     ]
   },

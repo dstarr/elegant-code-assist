@@ -2,3 +2,4 @@
 export { Command } from './Command';
 export { HelloWorldCommand } from './HelloWorldCommand';
 export { ShowCodeCommand } from './ShowCodeCommand';
+export { ShowModelsCommand } from './ShowModelsCommand';

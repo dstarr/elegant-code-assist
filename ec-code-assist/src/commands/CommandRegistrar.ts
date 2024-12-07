@@ -1,6 +1,6 @@
 // a class that registers all the commands with the VS Code context
 import * as vscode from 'vscode';
-import { Command, HelloWorldCommand, ShowCodeCommand } from './index';
+import { Command, HelloWorldCommand, ShowCodeCommand, ShowModelsCommand } from './index';
 
 /**
  * A class that registers all the commands with the VS Code context
@@ -27,6 +27,10 @@ export class CommandRegistrar {
 
         // Show Selected Code command
         command = new ShowCodeCommand(context);
+        this.commands[command.name] = command;
+
+        // Show Models command
+        command = new ShowModelsCommand();
         this.commands[command.name] = command;
 
         // iterate through the commands and register them with VS Code
