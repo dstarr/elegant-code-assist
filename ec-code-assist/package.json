@@ -1,7 +1,7 @@
 {
   "name": "ec-code-assist",
   "displayName": "Elegant Code Assist",
-  "description": "",
+  "description": "A coding assistant that works with Ollama.3",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
@@ -19,7 +19,7 @@
       },
       {
         "command": "ec-assist.showSelectedCode",
-        "title": "EC: Show Selected Code"
+        "title": "EC: Show Code"
       }
     ]
   },

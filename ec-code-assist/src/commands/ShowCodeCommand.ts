@@ -14,7 +14,7 @@ interface CodeToShow {
 /**
  * Command to show the code in a webview panel.
  */
-export class ShowSelectedCodeCommand implements Command {
+export class ShowCodeCommand implements Command {
 
 	private readonly _context: vscode.ExtensionContext;
 	
