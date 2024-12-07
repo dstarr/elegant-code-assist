@@ -18,7 +18,7 @@ export class ShowSelectedCodeCommand implements Command {
 
 		const panelTitle = 'Elegant Code Assist';
 
-		const options = {
+		const panelOptions = {
 			enableScripts: true
 		};
 
@@ -26,16 +26,28 @@ export class ShowSelectedCodeCommand implements Command {
 			this.name,
 			panelTitle,
 			vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-			options
+			panelOptions
 		);
 
-		panel.webview.html = this.getWebviewContent();
+		panel.webview.html = this._getWebviewContent();
 	}
 
-	getWebviewContent(): string {
+	private _getWebviewContent(): string {
+
+		const code = this._getCodeToShow();
+	
+		const filePath: vscode.Uri = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html'));
+		
+		let html = fs.readFileSync(filePath.fsPath, 'utf8');
+		html = html.replace('{{selectedCode}}', code);
+		
+		return html;
+	}
+
+	private _getCodeToShow(): string {
 
 		const editor = vscode.window.activeTextEditor;
-		let selectedCode = '';
+		let selectedCode: string = '';
 
 		// ensure a docment is open
 		if (editor) {
@@ -52,12 +64,7 @@ export class ShowSelectedCodeCommand implements Command {
 			selectedCode = 'No document is active.';
 		}
 
-		const filePath: vscode.Uri = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'showSelectedCode.html'));
-		
-		let html = fs.readFileSync(filePath.fsPath, 'utf8');
-		html = html.replace('{{selectedCode}}', selectedCode);
-		
-		return html;
+		return selectedCode.trim();
 	}
 }
 
