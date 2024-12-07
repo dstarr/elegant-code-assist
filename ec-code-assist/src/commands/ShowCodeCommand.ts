@@ -17,14 +17,22 @@ interface CodeToShow {
 export class ShowCodeCommand implements Command {
 
 	private readonly _context: vscode.ExtensionContext;
-	private readonly panelTitle: string = 'Elegant Code Assist';
-	private readonly panelOptions: vscode.WebviewOptions = {
+	private readonly _panelTitle: string = 'Elegant Code Assist';
+	private readonly _panelOptions: vscode.WebviewOptions = {
 		enableScripts: true
 	};
-	private panel: vscode.WebviewPanel | undefined;
 	
+	private _panel: vscode.WebviewPanel | undefined;
+	
+	/**
+	 * This is the command identifier that the command is registered with.
+	 */
 	public name: string = 'ec-assist.showSelectedCode';
-	
+
+	/**
+	 * Constructor.
+	 * @param context The extension context.
+	 */
 	constructor(context: vscode.ExtensionContext) {
 		this._context = context;
 		console.debug('ShowCodeCommand created.');
@@ -32,33 +40,33 @@ export class ShowCodeCommand implements Command {
 
 	/**
 	 * Execute the command.
-	 *	- Create a webview panel.
-	 *	- Get the code to show in the panel.
-	 *	- Load the code in the webview panel.
-	 */
+	 * 	- If the panel already exists, reveal it.
+	 * 	- Create a webview panel.
+	 * 	- Get the code to show in the panel.
+	 * 	- Load the code in the webview panel.
+	*/
 	public execute(): void {
 
-		console.debug('Executing ShowCodeCommand.');
-
+		// Get the active text editor column
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
-		if(this.panel) {
-			this.panel.webview.html = this._getWebviewContent();
-			this.panel.reveal(column);
-			console.debug('Revealed the webview panel.');
+		// If the panel already exists, reveal it
+		if(this._panel) {
+			this._panel.webview.html = this._getWebviewContent();
+			this._panel.reveal(column);
 		} else {
-			this.panel = vscode.window.createWebviewPanel(
+			// Create a new webview panel
+			this._panel = vscode.window.createWebviewPanel(
 				this.name,
-				this.panelTitle,
+				this._panelTitle,
 				column || vscode.ViewColumn.One,
-				this.panelOptions
+				this._panelOptions
 			);
-			this.panel.webview.html = this._getWebviewContent();
+			this._panel.webview.html = this._getWebviewContent();
 			
-			this.panel.onDidDispose(() => {
-				this.panel = undefined;
+			this._panel.onDidDispose(() => {
+				this._panel = undefined;
 			});
-			console.debug('Created the webview');
 		}
 		
 	}
@@ -70,13 +78,11 @@ export class ShowCodeCommand implements Command {
 	private _getWebviewContent(): string {
 
 		const codeInfo = this._getCodeToShow();
-
 		const htmlPath: string = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).path;
 
 		let html = fs.readFileSync(htmlPath, 'utf8');
-
-		html = html.replace('{{code}}', codeInfo.code);
-		html = html.replace('{{language}}', codeInfo.language);
+			html = html.replace('{{code}}', codeInfo.code);
+			html = html.replace('{{language}}', codeInfo.language);
 
 		return html;
 	}
@@ -96,8 +102,8 @@ export class ShowCodeCommand implements Command {
 			const selection = editor.selection;
 			code = editor.document.languageId;
 
+			// Get the selected text if any, otherwise, get the entire document text
 			if (selection.isEmpty) {
-				// Get the selected text if any, otherwise, get the entire document text
 				code = document.getText();
 			} else {
 				code = document.getText(selection);
@@ -110,7 +116,6 @@ export class ShowCodeCommand implements Command {
 			code: code.trim(),
 			language: codeLanguage
 		};
-
 	}
 }
 
