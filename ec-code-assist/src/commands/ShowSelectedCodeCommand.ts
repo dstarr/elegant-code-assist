@@ -3,11 +3,17 @@ import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { Command } from './Command';
 
+/**
+ * Interface for passing the code to show in the webview panel.
+ */
 interface CodeToShow {
 	code: string;
 	language: string;
 }
 
+/**
+ * Command to show the code in a webview panel.
+ */
 export class ShowSelectedCodeCommand implements Command {
 
 	private readonly _context: vscode.ExtensionContext;
@@ -18,6 +24,12 @@ export class ShowSelectedCodeCommand implements Command {
 		this._context = context;
 	}
 
+	/**
+	 * Execute the command.
+	 *	- Create a webview panel.
+	 *	- Get the code to show in the panel.
+	 *	- Load the code in the webview panel.
+	 */
 	public execute(): void {
 
 		const panelTitle = 'Elegant Code Assist';
@@ -33,10 +45,14 @@ export class ShowSelectedCodeCommand implements Command {
 			panelOptions
 		);
 
-		panel.webview.html = this._getWebviewContent(panel);
+		panel.webview.html = this._getWebviewContent();
 	}
 
-	private _getWebviewContent(panel: vscode.WebviewPanel): string {
+	/**
+	 * Get the HTML content for the webview panel.
+	 * @param panel The webview panel.
+	 */
+	private _getWebviewContent(): string {
 
 		const codeInfo = this._getCodeToShow();
 	
@@ -50,6 +66,9 @@ export class ShowSelectedCodeCommand implements Command {
 		return html;
 	}
 
+	/**
+	 * Get the code to show in the webview panel HTML.
+	 */
 	private _getCodeToShow(): CodeToShow {
 
 		const editor = vscode.window.activeTextEditor;
