@@ -26,26 +26,27 @@ export class ShowSelectedCodeCommand implements Command {
 			enableScripts: true
 		};
 
-		const panel = vscode.window.createWebviewPanel(
+		const panel: vscode.WebviewPanel = vscode.window.createWebviewPanel(
 			this.name,
 			panelTitle,
 			vscode.ViewColumn.One, // Editor column to show the new webview panel in.
 			panelOptions
 		);
 
-		panel.webview.html = this._getWebviewContent();
+		panel.webview.html = this._getWebviewContent(panel);
 	}
 
-	private _getWebviewContent(): string {
+	private _getWebviewContent(panel: vscode.WebviewPanel): string {
 
 		const codeInfo = this._getCodeToShow();
 	
-		const filePath: vscode.Uri = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html'));
+		const htmlPath: string = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).path;
+
+		let html = fs.readFileSync(htmlPath, 'utf8');
+
+		html = html.replace('{{code}}', codeInfo.code);
+		html = html.replace('{{language}}', codeInfo.language);
 		
-		let html = fs.readFileSync(filePath.fsPath, 'utf8');
-			html = html.replace('{{code}}', codeInfo.code);
-			html = html.replace('{{language}}', codeInfo.language);
-			
 		return html;
 	}
 
@@ -54,7 +55,6 @@ export class ShowSelectedCodeCommand implements Command {
 		const editor = vscode.window.activeTextEditor;
 		let code: string = '';
 		let codeLanguage: string = '';
-
 
 		// ensure a docment is open
 		if (editor) {
