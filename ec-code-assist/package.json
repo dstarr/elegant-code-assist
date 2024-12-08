@@ -27,13 +27,13 @@
       }
     ],
     "views": {
-            "explorer": [
-                {
-                    "id": "ec-assist.showModelsView",
-                    "name": "EC Assist Models"
-                }
-            ]
+      "explorer": [
+        {
+          "id": "ec-assist.showModelsView",
+          "name": "EC Assist Models"
         }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -53,5 +53,9 @@
     "@vscode/test-electron": "^2.4.1",
     "eslint": "^9.13.0",
     "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "ollama": "^0.5.11"
   }
 }

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import ollama from 'ollama';
 
 /**
  * Represents a provider for the tree view that shows the models.
@@ -6,14 +7,13 @@ import * as vscode from 'vscode';
  */
 export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
  
-    private _models: ModelItem[] | undefined;
-    
+    private _models: ModelItem[] = [];
     private readonly _onDidChangeTreeData: vscode.EventEmitter<ModelItem | undefined | void>;
+    
     readonly onDidChangeTreeData: vscode.Event<ModelItem | undefined | void>;
 
     constructor() {
 
-        this._models = undefined;
         this._onDidChangeTreeData = new vscode.EventEmitter<ModelItem | undefined | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
     }
@@ -24,36 +24,37 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
 
     async getChildren(element?: ModelItem): Promise<ModelItem[]> {
 
-		console.debug("ShowModelsProvider.getChildren() called");
-
-        if(!this._models) {
-            await this._fetchModels();
-        }
+        await this.fetchModels();
         
         // Return child items of the passed element
-        return this._models || [];
+        return this._models;
     }
 
-    
-    refresh(): void {
-        this._onDidChangeTreeData.fire();
-    }
-    
-    private async _fetchModels(): Promise<void> {
+    /**
+     * Refreshes the tree view.
+     * This method is called when the tree view needs to be refreshed.
+     */
+    async refresh(): Promise<void> {
         
-        // Call the backend service to get the models
-        // For now, return some dummy data        
-
-        let models = new Set<ModelItem>();
-            models.add(new ModelItem("Model 1"));
-            models.add(new ModelItem("Model 2"));
-
-        // sleep for 2 seconds to simulate the delay in fetching the models
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        this._models = Array.from(models);
+        await this.fetchModels();
 
         this._onDidChangeTreeData.fire();
+    }
+
+    /**
+     * Fetches the models from the backend service and populates the models array.
+     */
+    private async fetchModels(): Promise<void> {
+        await ollama.list()
+                    .then((modelsResponse: any) => { 
+                        // Clear the models array
+                        this._models = [];
+
+                        // Add models to the models array
+                        modelsResponse.models.forEach((model: any) => {
+                            this._models.push(new ModelItem(model.name));
+                        });
+                    });
     }
 }
 
