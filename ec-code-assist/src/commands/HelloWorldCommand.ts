@@ -3,7 +3,7 @@ import { Command } from './Command';
 
 export class HelloWorldCommand implements Command {
     
-    public readonly name: string  = 'ec-assist.helloWorld';
+    public readonly name: string  = 'ec_assist_helloWorld';
 
     public execute(): void {
         vscode.window.showInformationMessage('Hello World from EC Code Assist command!');

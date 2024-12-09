@@ -32,21 +32,13 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * @param element When element is undefined, fetche the models
      * @returns 
      */
-    public async getChildren(element?: ModelItem): Promise<ModelItem[]> {
-        if(!element) {
+    async getChildren(element?: ModelItem): Promise<ModelItem[]> {
+        if (element) {
+            return Promise.resolve([]);
+        } else {
             await this.fetchModels();
+            return Promise.resolve(this._models);
         }
-        
-        return this._models;
-    }
-
-    /**
-     * Refreshes the tree view.
-     * This method is called when the tree view needs to be refreshed.
-     */
-    public async refresh(): Promise<void> {
-        // await this.fetchModels();
-        // this._onDidChangeTreeData.fire();
     }
 
     /**
@@ -65,6 +57,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                                 this._models.push(new ModelItem(model.name));
                             });
                         });
+            
         } catch (error) {
             console.error('Error fetching models:', error);
         }

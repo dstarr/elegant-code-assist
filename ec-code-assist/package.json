@@ -1,7 +1,13 @@
 {
   "name": "ec-code-assist",
   "displayName": "Elegant Code Assist",
-  "description": "A coding assistant that works with Ollama.3",
+  "description": "A coding assistant that works with Ollama to provide code suggestions and completions.",
+  "publisher": "Elegant Code",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dstarr/ec-code-assist.git"
+  },
+  "license": "MIT",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
@@ -14,24 +20,23 @@
   "contributes": {
     "commands": [
       {
-        "command": "ec-assist.helloWorld",
+        "command": "ec_assist_helloWorld",
         "title": "EC: Hello World"
       },
       {
-        "command": "ec-assist.showSelectedCode",
+        "command": "ec_assist_showSelectedCode",
         "title": "EC: Show Code"
       },
       {
-        "command": "ec-assist.showModels",
+        "command": "ec_assist_showModels",
         "title": "EC: Show Available Models"
       }
     ],
     "views": {
       "explorer": [
         {
-          "id": "ec-assist.showModelsView",
-          "name": "EC Assist Models",
-          "when": "ec-assist.showModelsLoaded"
+          "id": "ec_assist_modelsView",
+          "name": "EC: Assist Models"
         }
       ]
     }

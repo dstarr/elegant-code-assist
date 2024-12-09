@@ -27,7 +27,7 @@ export class ShowCodeCommand implements Command {
 	/**
 	 * This is the command identifier that the command is registered with.
 	 */
-	public name: string = 'ec-assist.showSelectedCode';
+	public name: string = 'ec_assist_.showSelectedCode';
 
 	/**
 	 * Constructor.
@@ -98,11 +98,11 @@ export class ShowCodeCommand implements Command {
 		let code: string = '';
 		let codeLanguage: string = '';
 
-		// ensure a docment is open
+		// ensure a document is open
 		if (editor) {
 			const document = editor.document;
 			const selection = editor.selection;
-			code = editor.document.languageId;
+			codeLanguage = editor.document.languageId;
 
 			// Get the selected text if any, otherwise, get the entire document text
 			if (selection.isEmpty) {

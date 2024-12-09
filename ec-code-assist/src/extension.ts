@@ -25,11 +25,15 @@ export function activate(context: vscode.ExtensionContext) {
  */
 function initializeDataProviders(context: vscode.ExtensionContext) {
 	
-	let view = vscode.window.createTreeView('ec-assist.showModelsView', {
-		treeDataProvider: new ShowModelsProvider()
+	const showModelsProvider = new ShowModelsProvider();
+
+	vscode.window.createTreeView('ec_assist_modelsView', {
+		treeDataProvider: showModelsProvider,
+		canSelectMany: false
 	});
-	vscode.commands.executeCommand('setContext', 'ec-assist.showModelsLoaded', true);
-	context.subscriptions.push(view);
+
+	vscode.window.registerTreeDataProvider('ec_assist_modelsView', showModelsProvider);
+	// vscode.commands.executeCommand('setContext', 'ec_assist_showModelsLoaded', true);
 }
 
 // This method is called when your extension is deactivated
