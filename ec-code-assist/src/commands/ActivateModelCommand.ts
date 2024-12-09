@@ -10,6 +10,9 @@ export class ActivateModelCommand implements Command {
 	}
 
     public execute(modelItem: vscode.TreeItem): void {
+        if(!modelItem) {
+            return;
+        }
         console.debug(`Command ${this.name} executed`);
         vscode.window.showInformationMessage(`EC Code Assist model activated with item: ${modelItem.label}`);
     }
