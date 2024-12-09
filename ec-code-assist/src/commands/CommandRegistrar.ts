@@ -7,12 +7,6 @@ import { ActivateModelCommand, Command, HelloWorldCommand, ShowCodeCommand, Show
  */
 export class CommandRegistrar {
 
-    public commands: { [id: string]: Command; } = {};
-
-    constructor() {
-        this.commands = {};
-    }
-
     /**
      * Register the command events for the extension
      * @param context 
@@ -26,7 +20,6 @@ export class CommandRegistrar {
         disposable = vscode.commands.registerCommand(helloWorldCommand.name, () => {
             helloWorldCommand.execute();
         });
-        this.commands[helloWorldCommand.name] = helloWorldCommand;
         context.subscriptions.push(disposable);
 
         // Show Selected Code command
@@ -34,7 +27,6 @@ export class CommandRegistrar {
         disposable = vscode.commands.registerCommand(showCodeCommand.name, () => {
             showCodeCommand.execute();
         });
-        this.commands[showCodeCommand.name] = showCodeCommand;
         context.subscriptions.push(disposable);
 ``
         // Show Models command
@@ -42,7 +34,6 @@ export class CommandRegistrar {
         disposable = vscode.commands.registerCommand(showModelsCommand.name, () => {
             showModelsCommand.execute();
         });
-        this.commands[showModelsCommand.name] = showModelsCommand;
         context.subscriptions.push(disposable);
 
         // Activate Model command
@@ -50,7 +41,6 @@ export class CommandRegistrar {
         disposable = vscode.commands.registerCommand(activateModelCommand.name, (item: vscode.TreeItem) => {
             activateModelCommand.execute(item);
         });
-        this.commands[activateModelCommand.name] = activateModelCommand;
         context.subscriptions.push(disposable);
     }
 }
