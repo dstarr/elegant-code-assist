@@ -12,20 +12,19 @@ export class PlaceholderDataProvider implements vscode.TreeDataProvider<vscode.T
 		this.onDidChangeTreeData = this._onDidChangeTreeData.event;
 	}
 
-	public refresh(): void {
-		console.debug("PlaceholderDataProvider.refresh() called");
-		this._onDidChangeTreeData.fire(new vscode.TreeItem("Loading..."));
-	}
-
 	public getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
 		console.debug("PlaceholderDataProvider.getTreeItem() called");
 		return element;
 	}
 
-	public getChildren(): vscode.TreeItem[] {
+	public getChildren(): Promise<vscode.TreeItem[]> {
+
 		console.debug("PlaceholderDataProvider.getChildren() called");
-		return [
-			new vscode.TreeItem("Loading..."),
-		];
+
+		return new Promise((resolve) => {
+				resolve([
+					new vscode.TreeItem("Loading...", vscode.TreeItemCollapsibleState.None),
+				]);
+		});
 	}
 }
