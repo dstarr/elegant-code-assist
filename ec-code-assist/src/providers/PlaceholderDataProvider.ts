@@ -17,6 +17,11 @@ export class PlaceholderDataProvider implements vscode.TreeDataProvider<vscode.T
 		return element;
 	}
 
+	public refresh(): void {
+		console.debug("PlaceholderDataProvider.refresh() called");
+		this._onDidChangeTreeData.fire({});
+	}
+
 	public getChildren(): Promise<vscode.TreeItem[]> {
 
 		console.debug("PlaceholderDataProvider.getChildren() called");

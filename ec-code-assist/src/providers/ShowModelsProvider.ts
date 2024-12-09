@@ -8,25 +8,35 @@ import ollama from 'ollama';
 export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
  
     private _models: ModelItem[] = [];
-    private readonly _onDidChangeTreeData: vscode.EventEmitter<ModelItem | undefined | void>;
+    private readonly _onDidChangeTreeData: vscode.EventEmitter<ModelItem>;
     
-    readonly onDidChangeTreeData: vscode.Event<ModelItem | undefined | void>;
+    // Event that is fired when the tree view needs to be refreshed.
+    public readonly onDidChangeTreeData: vscode.Event<ModelItem | undefined>;
 
     constructor() {
-
-        this._onDidChangeTreeData = new vscode.EventEmitter<ModelItem | undefined | void>();
+        this._onDidChangeTreeData = new vscode.EventEmitter<ModelItem>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
     }
 
-    getTreeItem(element: ModelItem): vscode.TreeItem {
+    /**
+      * Returns the tree item for the given model item.
+      * @param element The model item to be displayed.
+      * @returns The tree item for the given model item.
+      */
+    public getTreeItem(element: ModelItem): vscode.TreeItem {
         return element;
     }
 
-    async getChildren(element?: ModelItem): Promise<ModelItem[]> {
-
-        await this.fetchModels();
+    /**
+     * Always returns the top level nodes of the tree view.
+     * @param element When element is undefined, fetche the models
+     * @returns 
+     */
+    public async getChildren(element?: ModelItem): Promise<ModelItem[]> {
+        if(!element) {
+            await this.fetchModels();
+        }
         
-        // Return child items of the passed element
         return this._models;
     }
 
@@ -34,11 +44,9 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * Refreshes the tree view.
      * This method is called when the tree view needs to be refreshed.
      */
-    async refresh(): Promise<void> {
-        
-        await this.fetchModels();
-
-        this._onDidChangeTreeData.fire();
+    public async refresh(): Promise<void> {
+        // await this.fetchModels();
+        // this._onDidChangeTreeData.fire();
     }
 
     /**

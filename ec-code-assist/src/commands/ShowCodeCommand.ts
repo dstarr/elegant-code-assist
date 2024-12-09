@@ -78,9 +78,11 @@ export class ShowCodeCommand implements Command {
 	private _getWebviewContent(): string {
 
 		const codeInfo = this._getCodeToShow();
-		const htmlPath: string = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).path;
+		const htmlPath = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).with({ scheme: 'vscode-resource' });
 
-		let html = fs.readFileSync(htmlPath, 'utf8');
+		console.debug(htmlPath.toString());
+
+		let html = fs.readFileSync(htmlPath.fsPath, 'utf8');
 			html = html.replace('{{code}}', codeInfo.code);
 			html = html.replace('{{language}}', codeInfo.language);
 
