@@ -27,12 +27,13 @@ function initializeDataProviders(context: vscode.ExtensionContext) {
 	
 	const showModelsProvider = new ShowModelsProvider();
 
+	vscode.window.registerTreeDataProvider('ec_assist_modelsView', showModelsProvider);
+	
 	vscode.window.createTreeView('ec_assist_modelsView', {
 		treeDataProvider: showModelsProvider,
 		canSelectMany: false
 	});
 
-	vscode.window.registerTreeDataProvider('ec_assist_modelsView', showModelsProvider);
 	// vscode.commands.executeCommand('setContext', 'ec_assist_showModelsLoaded', true);
 }
 
