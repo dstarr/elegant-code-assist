@@ -24,7 +24,7 @@
         "title": "EC: Hello World"
       },
       {
-        "command": "ec_assist_showSelectedCode",
+        "command": "ec_assist_showCode",
         "title": "EC: Show Code"
       },
       {

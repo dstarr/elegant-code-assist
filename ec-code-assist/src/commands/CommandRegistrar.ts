@@ -1,6 +1,6 @@
 // a class that registers all the commands with the VS Code context
 import * as vscode from 'vscode';
-import { Command, HelloWorldCommand, ShowCodeCommand, ShowModelsCommand } from './index';
+import { ActivateModelCommand, Command, HelloWorldCommand, ShowCodeCommand, ShowModelsCommand } from './index';
 
 /**
  * A class that registers all the commands with the VS Code context
@@ -18,32 +18,39 @@ export class CommandRegistrar {
      * @param context 
      */
     public registerCommandEvents(context: vscode.ExtensionContext): void {
-        
-        let command: Command;
+
+        let disposable: vscode.Disposable;
 
         // Hello World command
-        command = new HelloWorldCommand();
-        this.commands[command.name] = command;
+        const helloWorldCommand = new HelloWorldCommand();
+        disposable = vscode.commands.registerCommand(helloWorldCommand.name, () => {
+            helloWorldCommand.execute();
+        });
+        this.commands[helloWorldCommand.name] = helloWorldCommand;
+        context.subscriptions.push(disposable);
 
         // Show Selected Code command
-        command = new ShowCodeCommand(context);
-        this.commands[command.name] = command;
-
+        const showCodeCommand = new ShowCodeCommand(context);
+        disposable = vscode.commands.registerCommand(showCodeCommand.name, () => {
+            showCodeCommand.execute();
+        });
+        this.commands[showCodeCommand.name] = showCodeCommand;
+        context.subscriptions.push(disposable);
+``
         // Show Models command
-        command = new ShowModelsCommand();
-        this.commands[command.name] = command;
+        const showModelsCommand = new ShowModelsCommand();
+        disposable = vscode.commands.registerCommand(showModelsCommand.name, () => {
+            showModelsCommand.execute();
+        });
+        this.commands[showModelsCommand.name] = showModelsCommand;
+        context.subscriptions.push(disposable);
 
-        // iterate through the commands and register them with VS Code
-        for (let key in this.commands) {
-            let command = this.commands[key];
-            let disposable = vscode.commands.registerCommand(command.name, () => {
-                command.execute();
-            });
-
-            context.subscriptions.push(disposable);
-        }
-
-
-        // context.subscriptions.push(vscode.commands.registerCommand(activateModelCommand.name, (item: vscode.TreeItem) => activateModelCommand.execute(item)));
+        // Activate Model command
+        const activateModelCommand = new ActivateModelCommand();
+        disposable = vscode.commands.registerCommand(activateModelCommand.name, (item: vscode.TreeItem) => {
+            activateModelCommand.execute(item);
+        });
+        this.commands[activateModelCommand.name] = activateModelCommand;
+        context.subscriptions.push(disposable);
     }
 }

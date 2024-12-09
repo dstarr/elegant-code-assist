@@ -7,5 +7,5 @@ export interface Command {
     name: string;
 
     // The command execution logic
-    execute(): void;
+    execute(args?:{}): void;
 }

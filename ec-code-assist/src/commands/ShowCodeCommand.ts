@@ -27,7 +27,7 @@ export class ShowCodeCommand implements Command {
 	/**
 	 * This is the command identifier that the command is registered with.
 	 */
-	public name: string = 'ec_assist_.showSelectedCode';
+	public name: string = 'ec_assist_showCode';
 
 	/**
 	 * Constructor.
@@ -35,7 +35,7 @@ export class ShowCodeCommand implements Command {
 	 */
 	constructor(context: vscode.ExtensionContext) {
 		this._context = context;
-		console.debug('ShowCodeCommand created.');
+        console.debug(`Command ${this.name} created`);
 	}
 
 	/**
@@ -46,6 +46,8 @@ export class ShowCodeCommand implements Command {
 	 * 	- Load the code in the webview panel.
 	*/
 	public execute(): void {
+
+        console.debug(`Command ${this.name} executed`);
 
 		// Get the active text editor column
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
