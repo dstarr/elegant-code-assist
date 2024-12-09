@@ -42,5 +42,8 @@ export class CommandRegistrar {
 
             context.subscriptions.push(disposable);
         }
+
+
+        // context.subscriptions.push(vscode.commands.registerCommand(activateModelCommand.name, (item: vscode.TreeItem) => activateModelCommand.execute(item)));
     }
 }
