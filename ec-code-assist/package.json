@@ -9,7 +9,8 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -30,7 +31,8 @@
       "explorer": [
         {
           "id": "ec-assist.showModelsView",
-          "name": "EC Assist Models"
+          "name": "EC Assist Models",
+          "when": "ec-assist.showModelsLoaded"
         }
       ]
     }
