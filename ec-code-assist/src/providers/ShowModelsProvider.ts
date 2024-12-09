@@ -45,16 +45,21 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * Fetches the models from the backend service and populates the models array.
      */
     private async fetchModels(): Promise<void> {
-        await ollama.list()
-                    .then((modelsResponse: any) => { 
-                        // Clear the models array
-                        this._models = [];
 
-                        // Add models to the models array
-                        modelsResponse.models.forEach((model: any) => {
-                            this._models.push(new ModelItem(model.name));
+        try {
+            await ollama.list()
+                        .then((modelsResponse: any) => { 
+                            // Clear the models array
+                            this._models = [];
+                            
+                            // Add models to the models array
+                            modelsResponse.models.forEach((model: any) => {
+                                this._models.push(new ModelItem(model.name));
+                            });
                         });
-                    });
+        } catch (error) {
+            console.error('Error fetching models:', error);
+        }
     }
 }
 

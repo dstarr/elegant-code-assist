@@ -13,25 +13,23 @@ export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Congratulations, EC Code Assist" is now active!');
 
-	initializeDataProviders();
+	initializeDataProviders(context);
 	
 	// Register the command events for the extension
 	const commandRegistrar = new CommandRegistrar();
 	commandRegistrar.registerCommandEvents(context);
-	
 }
 
 /**
  * Initialize the data providers for the extension
  */
-function initializeDataProviders() {
-	const placeholderDataProvider = new PlaceholderDataProvider();
-	vscode.window.registerTreeDataProvider('ec-assist.showModelsView', placeholderDataProvider);
-	placeholderDataProvider.refresh();
-
-	const showModelsProvider = new ShowModelsProvider();
-	vscode.window.registerTreeDataProvider('ec-assist.showModelsView', showModelsProvider);
-	showModelsProvider.refresh();
+function initializeDataProviders(context: vscode.ExtensionContext) {
+	
+	let view = vscode.window.createTreeView('ec-assist.showModelsView', {
+		treeDataProvider: new ShowModelsProvider()
+	});
+	vscode.commands.executeCommand('setContext', 'ec-assist.showModelsLoaded', true);
+	context.subscriptions.push(view);
 }
 
 // This method is called when your extension is deactivated
