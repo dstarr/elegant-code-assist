@@ -6,9 +6,10 @@ import { Command } from './Command';
 /**
  * Interface for passing the code to show in the webview panel.
  */
-interface CodeToShow {
-	code: string;
+interface PageModel {
+	originalCode: string;
 	language: string;
+	chatCode: string;
 }
 
 /**
@@ -79,47 +80,78 @@ export class ShowCodeCommand implements Command {
 	 */
 	private _getWebviewContent(): string {
 
-		const codeInfo = this._getCodeToShow();
+		const pageModel: PageModel = this._getPageModel();
 		const htmlPath = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).with({ scheme: 'vscode-resource' });
 
-		console.debug(htmlPath.toString());
-
 		let html = fs.readFileSync(htmlPath.fsPath, 'utf8');
-			html = html.replace('{{code}}', codeInfo.code);
-			html = html.replace('{{language}}', codeInfo.language);
+
+		// do token replacement in the HTML
+		html = html.replace('{{codeLanguage}}', pageModel.language);
+		html = html.replace('{{originalCode}}', pageModel.originalCode);
+		html = html.replace('{{chatCode}}', pageModel.chatCode);
 
 		return html;
 	}
 
 	/**
-	 * Get the code to show in the webview panel HTML.
+	 * Get the content to show in the webview panel HTML.
 	 */
-	private _getCodeToShow(): CodeToShow {
+	private _getPageModel(): PageModel {
 
+		let pageModel: PageModel = {
+			originalCode: 'No active document.',
+			language: '',
+			chatCode: ''
+		};
+		
 		const editor = vscode.window.activeTextEditor;
-		let code: string = '';
-		let codeLanguage: string = '';
-
+		
 		// ensure a document is open
 		if (editor) {
-			const document = editor.document;
-			const selection = editor.selection;
-			codeLanguage = editor.document.languageId;
+			let codeLanguage: string;
+			let originalCode: string;
 
-			// Get the selected text if any, otherwise, get the entire document text
-			if (selection.isEmpty) {
-				code = document.getText();
-			} else {
-				code = document.getText(selection);
-			}
+			({ codeLanguage, originalCode } = this._getOriginalCode(editor));
+			const chatCode: string = this._getChatCode(originalCode, codeLanguage);
+
+			pageModel.originalCode = originalCode;
+			pageModel.language = codeLanguage;
+			pageModel.chatCode = chatCode;
+		} 
+
+		return pageModel;
+	}
+	private _getChatCode(originalCode: string, codeLanguage: string): string {
+
+		let chatCode: string = 'Unable to process request.';
+
+		return chatCode;
+	}
+
+	
+	/**
+	 * Get the original code from the active document.
+	 * Values can be:
+	 * - The selected text if any.
+	 * - The entire document text if no text is selected.
+	 * @param editor The active text editor.
+	 */
+	private _getOriginalCode(editor: vscode.TextEditor) {
+
+		let code: string = "No active document.";
+		let codeLanguage: string = '';
+
+		const document = editor.document;
+		const selection = editor.selection;
+		codeLanguage = editor.document.languageId;
+
+		// Get the selected text if any, otherwise, get the entire document text
+		if (selection.isEmpty) {
+			code = document.getText();
 		} else {
-			code = 'No document is active.';
+			code = document.getText(selection);
 		}
-
-		return {
-			code: code.trim(),
-			language: codeLanguage
-		};
+		return { codeLanguage, originalCode: code };
 	}
 }
 
