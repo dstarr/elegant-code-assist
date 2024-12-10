@@ -44,6 +44,13 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
     }
 
     /**
+     * Refreshes the tree view.
+     */
+    public refresh(): void {
+        this._onDidChangeTreeData.fire({});
+    }
+
+    /**
      * Fetches the models from the backend service and populates the models array.
      */
     private async _fetchModels(): Promise<void> {

@@ -22,11 +22,8 @@ export class ActivateModelCommand implements Command {
         await this._context.workspaceState.update('ec_assist_activeModel', modelItem.label)
                 .then(() => {
                     // show an icon next to the active item
-                    modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                    
-                    vscode.commands.executeCommand('ec_assist_refreshModelsView');
-                    
-                    vscode.window.showInformationMessage(`Model activated: ${modelItem.label}`);
+                    this._context.workspaceState.update('ec-code-assist.activeModel', modelItem.label);
+                    console.debug('Active model set in command:', modelItem.label);
                 });
     }
 }
