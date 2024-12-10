@@ -1,8 +1,6 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { CommandRegistrar } from './commands/CommandRegistrar';
-import { PlaceholderDataProvider, ShowModelsProvider } from './providers';
+import { ShowModelsProvider } from './providers';
 
 /**
  * This method is called when your extension is activated
@@ -25,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
  */
 function initializeDataProviders(context: vscode.ExtensionContext) {
 	
-	const showModelsProvider = new ShowModelsProvider();
+	const showModelsProvider: ShowModelsProvider = new ShowModelsProvider();
 
 	vscode.window.registerTreeDataProvider('ec_assist_modelsView', showModelsProvider);
 	
@@ -33,8 +31,6 @@ function initializeDataProviders(context: vscode.ExtensionContext) {
 		treeDataProvider: showModelsProvider,
 		canSelectMany: false
 	});
-
-	// vscode.commands.executeCommand('setContext', 'ec_assist_showModelsLoaded', true);
 }
 
 // This method is called when your extension is deactivated
