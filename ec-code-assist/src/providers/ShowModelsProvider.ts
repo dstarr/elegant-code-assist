@@ -12,10 +12,12 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
     
     // Event that is fired when the tree view needs to be refreshed.
     public readonly onDidChangeTreeData: vscode.Event<ModelItem | undefined>;
+    private readonly _context: vscode.ExtensionContext;
 
-    constructor() {
+    constructor(context: vscode.ExtensionContext) {
         this._onDidChangeTreeData = new vscode.EventEmitter<ModelItem>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+        this._context = context;
     }
 
     /**
@@ -36,7 +38,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
         if (element) {
             return Promise.resolve([]);
         } else {
-            await this.fetchModels();
+            await this._fetchModels();
             return Promise.resolve(this._models);
         }
     }
@@ -44,7 +46,10 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
     /**
      * Fetches the models from the backend service and populates the models array.
      */
-    private async fetchModels(): Promise<void> {
+    private async _fetchModels(): Promise<void> {
+
+        const currentActiveModel: string | undefined = this._context.workspaceState.get<string>('ec-code-assist.activeModel');
+        let modelIsAssigned: boolean = currentActiveModel !== '' && currentActiveModel !== undefined;
 
         try {
             await ollama.list()
@@ -54,7 +59,22 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                             
                             // Add models to the models array
                             modelsResponse.models.forEach((model: any) => {
-                                this._models.push(new ModelItem(model.name));
+
+                                let modelItem = new ModelItem(model.name);
+                                
+                                // Set the icon for the first model if no model is assigned
+                                if(!modelIsAssigned) {
+                                    modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                                    modelIsAssigned = true;
+                                    this._context.workspaceState.update('ec-code-assist.activeModel', model.name)
+                                            .then(() => {
+                                                console.debug('First model set active:', model.name);
+                                            });
+                                } else if(model.name === currentActiveModel) {
+                                    modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                                } 
+
+                                this._models.push(modelItem);
                             });
                         });
             

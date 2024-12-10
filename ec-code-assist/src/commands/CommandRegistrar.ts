@@ -37,7 +37,7 @@ export class CommandRegistrar {
         context.subscriptions.push(disposable);
 
         // Activate Model command
-        const activateModelCommand = new ActivateModelCommand();
+        const activateModelCommand = new ActivateModelCommand(context);
         disposable = vscode.commands.registerCommand(activateModelCommand.name, (item: vscode.TreeItem) => {
             activateModelCommand.execute(item);
         });

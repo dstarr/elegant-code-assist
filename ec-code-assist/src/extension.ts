@@ -23,14 +23,25 @@ export function activate(context: vscode.ExtensionContext) {
  */
 function initializeDataProviders(context: vscode.ExtensionContext) {
 	
-	const showModelsProvider: ShowModelsProvider = new ShowModelsProvider();
-
-	vscode.window.registerTreeDataProvider('ec_assist_modelsView', showModelsProvider);
-	
-	vscode.window.createTreeView('ec_assist_modelsView', {
+	const showModelsProvider: ShowModelsProvider = new ShowModelsProvider(context);
+	const treeView = vscode.window.createTreeView('ec_assist_modelsView', {
 		treeDataProvider: showModelsProvider,
 		canSelectMany: false
 	});
+
+	// Listen for changes in the selection of the TreeView
+    treeView.onDidChangeSelection((event) => {
+        // When the selection changes, event.selection will contain the selected items
+        const selectedItems = event.selection;
+
+		// if there are items, there is only one
+        if (selectedItems.length > 0) {
+            let selectedItem = selectedItems[0]; // The first (only) selected item
+            selectedItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+			vscode.window.showInformationMessage(`Selected: ${selectedItem.label}`);
+            console.log(`Selected: ${selectedItem.label}`);
+        }
+    });
 }
 
 // This method is called when your extension is deactivated
