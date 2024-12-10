@@ -74,7 +74,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                                 if(!modelIsAssigned) {
                                     modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
                                     modelIsAssigned = true;
-                                    this._context.workspaceState.update('ec-code-assist.activeModel', model.name)
+                                    this._context.workspaceState.update('ec_assist.activeModel', model.name)
                                             .then(() => {
                                                 console.debug('First model set active:', model.name);
                                             });

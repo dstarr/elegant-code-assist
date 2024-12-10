@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { Command } from './Command';
+import ollama, { ChatRequest, ChatResponse } from 'ollama';
 
 /**
  * Interface for passing the code to show in the webview panel.
@@ -80,7 +81,8 @@ export class ShowCodeCommand implements Command {
 	 */
 	private _getWebviewContent(): string {
 
-		const pageModel: PageModel = this._getPageModel();
+		let pageModel: PageModel = this._getPageModel();
+
 		const htmlPath = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).with({ scheme: 'vscode-resource' });
 
 		let html = fs.readFileSync(htmlPath.fsPath, 'utf8');
@@ -112,23 +114,58 @@ export class ShowCodeCommand implements Command {
 			let originalCode: string;
 
 			({ codeLanguage, originalCode } = this._getOriginalCode(editor));
+
+			// Get the chat code
 			const chatCode: string = this._getChatCode(originalCode, codeLanguage);
 
-			pageModel.originalCode = originalCode;
 			pageModel.language = codeLanguage;
+			pageModel.originalCode = originalCode;
 			pageModel.chatCode = chatCode;
-		} 
+
+		}
 
 		return pageModel;
 	}
-	private _getChatCode(originalCode: string, codeLanguage: string): string {
-
-		let chatCode: string = 'Unable to process request.';
-
-		return chatCode;
-	}
 
 	
+	/**
+	 * Get the chat code from ollama.
+	 * @param originalCode The original code.
+	 * @param codeLanguage The language of the original code.
+	 */
+	private _getChatCode(originalCode: string, codeLanguage: string): string {
+
+		try {
+			// Send a request to the chat API reponse
+			const chatRequest: ChatRequest & {stream: true} = this._getChatPrompt(originalCode, codeLanguage);
+			ollama.chat(chatRequest)
+				.then((response) => {
+					console.debug(response);
+					return "GOT IT";
+				});
+			
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+
+		return "Error chatting";
+	}
+
+	/**
+	 * Get the chat prompt for ollama.
+	 * @param originalCode The original code.
+	 * @param codeLanguage The language of the original code.
+	 * @returns The chat request with the original code and language.
+	 */
+	private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: true; } {
+		// Intersection type combining ChatRequest and an inline type with stream property set to true
+		return {
+			model: this._context.workspaceState.get('ec_assist.activeModel') || '',
+			messages: [{ role: 'user', content: 'Why is the sky blue?' }]
+		} as ChatRequest & { stream: true; };
+	}
+
 	/**
 	 * Get the original code from the active document.
 	 * Values can be:
