@@ -9,15 +9,11 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
  
     private _models: ModelItem[] = [];
     
-    // private readonly _onDidChangeTreeData: vscode.EventEmitter<ModelItem>;
-    // public readonly onDidChangeTreeData: vscode.Event<ModelItem | undefined>;
-    
     private readonly _context: vscode.ExtensionContext;
 
-    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void> =
-        new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
-    readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void> =
-        this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void> = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
+    
+    public readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
     constructor(context: vscode.ExtensionContext) {
         this._context = context;
@@ -72,7 +68,9 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
 
                                 let modelItem = new ModelItem(model.name);
                                 
-                                // Set the icon for the first model if no model is assigned
+                                // if no model is currently active, set the first model as active
+                                // set the icon for the active model node
+                                // save the active model in the workspace state
                                 if(!modelIsAssigned) {
                                     modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
                                     modelIsAssigned = true;
@@ -80,6 +78,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                                             .then(() => {
                                                 console.debug('First model set active:', model.name);
                                             });
+                                            // set the icon for the active model node
                                 } else if(model.name === currentActiveModel) {
                                     modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
                                 } 

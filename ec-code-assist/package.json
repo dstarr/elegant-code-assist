@@ -33,12 +33,6 @@
         "command": "ec_assist_showModels",
         "title": "Show Available Models",
         "category": "EC"
-      },
-      {
-          "command": "ec_assist_activateModel",
-          "title": "Activate Model",
-          "category": "EC",
-          "when": "false"
       }
     ],
     "views": {
@@ -50,13 +44,7 @@
       ]
     },
     "menus": {
-            "view/item/context": [
-                {
-                    "command": "ec_assist_activateModel",
-                    "when": "view == ec_assist_modelsView",
-                    "group": "navigation"
-                }
-            ]
+            "view/item/context": []
         }
   },
   "scripts": {
