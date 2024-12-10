@@ -8,15 +8,18 @@ import ollama from 'ollama';
 export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
  
     private _models: ModelItem[] = [];
-    private readonly _onDidChangeTreeData: vscode.EventEmitter<ModelItem>;
     
-    // Event that is fired when the tree view needs to be refreshed.
-    public readonly onDidChangeTreeData: vscode.Event<ModelItem | undefined>;
+    // private readonly _onDidChangeTreeData: vscode.EventEmitter<ModelItem>;
+    // public readonly onDidChangeTreeData: vscode.Event<ModelItem | undefined>;
+    
     private readonly _context: vscode.ExtensionContext;
 
+    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void> =
+        new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
+    readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void> =
+        this._onDidChangeTreeData.event;
+
     constructor(context: vscode.ExtensionContext) {
-        this._onDidChangeTreeData = new vscode.EventEmitter<ModelItem>();
-        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this._context = context;
     }
 
@@ -47,7 +50,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * Refreshes the tree view.
      */
     public refresh(): void {
-        this._onDidChangeTreeData.fire({});
+        this._onDidChangeTreeData.fire();
     }
 
     /**
