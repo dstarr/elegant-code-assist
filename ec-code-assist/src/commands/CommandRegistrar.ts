@@ -1,6 +1,6 @@
 // a class that registers all the commands with the VS Code context
 import * as vscode from 'vscode';
-import { ActivateModelCommand, Command, HelloWorldCommand, ShowCodeCommand, ShowModelsCommand } from './index';
+import { HelloWorldCommand, ShowCodeCommand, ShowModelsCommand } from './index';
 
 /**
  * A class that registers all the commands with the VS Code context
@@ -28,7 +28,7 @@ export class CommandRegistrar {
             showCodeCommand.execute();
         });
         context.subscriptions.push(disposable);
-``
+
         // Show Models command
         const showModelsCommand = new ShowModelsCommand();
         disposable = vscode.commands.registerCommand(showModelsCommand.name, () => {

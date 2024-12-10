@@ -39,7 +39,7 @@
       "explorer": [
         {
           "id": "ec_assist_modelsView",
-          "name": "EC: Assist Models"
+          "name": "Ollama Models"
         }
       ]
     },
