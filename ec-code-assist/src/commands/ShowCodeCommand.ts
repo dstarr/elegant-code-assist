@@ -10,7 +10,7 @@ import ollama, { ChatRequest, ChatResponse } from 'ollama';
 interface PageModel {
 	originalCode: string;
 	language: string;
-	chatCode: string;
+	chatReply: string;
 }
 
 /**
@@ -47,7 +47,7 @@ export class ShowCodeCommand implements Command {
 	 * 	- Get the code to show in the panel.
 	 * 	- Load the code in the webview panel.
 	*/
-	public execute(): void {
+	public async execute(): Promise<void> {
 
         console.debug(`Command ${this.name} executed`);
 
@@ -56,7 +56,7 @@ export class ShowCodeCommand implements Command {
 
 		// If the panel already exists, reveal it
 		if(this._panel) {
-			this._panel.webview.html = this._getWebviewContent();
+			this._panel.webview.html = await this._getWebviewContent();
 			this._panel.reveal(column);
 		} else {
 			// Create a new webview panel
@@ -66,7 +66,7 @@ export class ShowCodeCommand implements Command {
 				column || vscode.ViewColumn.One,
 				this._panelOptions
 			);
-			this._panel.webview.html = this._getWebviewContent();
+			this._panel.webview.html = await this._getWebviewContent();
 			
 			this._panel.onDidDispose(() => {
 				this._panel = undefined;
@@ -79,9 +79,11 @@ export class ShowCodeCommand implements Command {
 	 * Get the HTML content for the webview panel.
 	 * @param panel The webview panel.
 	 */
-	private _getWebviewContent(): string {
+	private async _getWebviewContent(): Promise<string> {
 
-		let pageModel: PageModel = this._getPageModel();
+		let pageModel: PageModel = await this._getPageModel();
+
+		console.debug(pageModel);
 
 		const htmlPath = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).with({ scheme: 'vscode-resource' });
 
@@ -90,7 +92,7 @@ export class ShowCodeCommand implements Command {
 		// do token replacement in the HTML
 		html = html.replace('{{codeLanguage}}', pageModel.language);
 		html = html.replace('{{originalCode}}', pageModel.originalCode);
-		html = html.replace('{{chatCode}}', pageModel.chatCode);
+		html = html.replace('{{chatCode}}', pageModel.chatReply);
 
 		return html;
 	}
@@ -98,12 +100,12 @@ export class ShowCodeCommand implements Command {
 	/**
 	 * Get the content to show in the webview panel HTML.
 	 */
-	private _getPageModel(): PageModel {
+	private async _getPageModel(): Promise<PageModel> {
 
 		let pageModel: PageModel = {
 			originalCode: 'No active document.',
 			language: '',
-			chatCode: ''
+			chatReply: ''
 		};
 		
 		const editor = vscode.window.activeTextEditor;
@@ -114,14 +116,15 @@ export class ShowCodeCommand implements Command {
 			let originalCode: string;
 
 			({ codeLanguage, originalCode } = this._getOriginalCode(editor));
-
-			// Get the chat code
-			const chatCode: string = this._getChatCode(originalCode, codeLanguage);
-
+			
 			pageModel.language = codeLanguage;
 			pageModel.originalCode = originalCode;
-			pageModel.chatCode = chatCode;
 
+			// Get the chat code
+			await this._getChatCode(originalCode, codeLanguage)
+				.then((chatCode) => {
+					pageModel.chatReply = chatCode;
+				});
 		}
 
 		return pageModel;
@@ -133,23 +136,28 @@ export class ShowCodeCommand implements Command {
 	 * @param originalCode The original code.
 	 * @param codeLanguage The language of the original code.
 	 */
-	private _getChatCode(originalCode: string, codeLanguage: string): string {
-
-		try {
-			// Send a request to the chat API reponse
-			const chatRequest: ChatRequest & {stream: true} = this._getChatPrompt(originalCode, codeLanguage);
-			ollama.chat(chatRequest)
-				.then((response) => {
-					console.debug(response);
-					return "GOT IT";
-				});
-			
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
-
-		return "Error chatting";
+	private _getChatCode(originalCode: string, codeLanguage: string): Promise<string> {
+		return new Promise((resolve, reject) => {
+			let chatResponse: string = "DO NOT GOT IT";
+	
+			try {
+				// Send a request to the chat API response
+				const chatRequest: ChatRequest & { stream: false } = this._getChatPrompt(originalCode, codeLanguage);
+	
+				ollama.chat(chatRequest)
+					.then((response) => {
+						chatResponse = response.message.content;
+						resolve(chatResponse);
+					})
+					.catch((error) => {
+						console.error(error);
+						reject(error);
+					});
+			} catch (error) {
+				console.error(error);
+				reject(error);
+			}
+		});
 	}
 
 	/**
@@ -158,12 +166,12 @@ export class ShowCodeCommand implements Command {
 	 * @param codeLanguage The language of the original code.
 	 * @returns The chat request with the original code and language.
 	 */
-	private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: true; } {
+	private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: false; } {
 		// Intersection type combining ChatRequest and an inline type with stream property set to true
 		return {
 			model: this._context.workspaceState.get('ec_assist.activeModel') || '',
 			messages: [{ role: 'user', content: 'Why is the sky blue?' }]
-		} as ChatRequest & { stream: true; };
+		} as ChatRequest & { stream: false; };
 	}
 
 	/**

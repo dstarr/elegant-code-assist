@@ -54,7 +54,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      */
     private async _fetchModels(): Promise<void> {
 
-        const currentActiveModel: string | undefined = this._context.workspaceState.get<string>('ec-code-assist.activeModel');
+        const currentActiveModel: string | undefined = this._context.workspaceState.get<string>('ec_assist.activeModel');
         let modelIsAssigned: boolean = currentActiveModel !== '' && currentActiveModel !== undefined;
 
         try {
@@ -81,6 +81,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                                             // set the icon for the active model node
                                 } else if(model.name === currentActiveModel) {
                                     modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                                    console.debug('Active model:', model.name);
                                 } 
 
                                 this._models.push(modelItem);
