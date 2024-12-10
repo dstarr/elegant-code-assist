@@ -8,7 +8,7 @@ import { HelloWorldCommand, ShowCodeCommand, ShowModelsCommand } from './index';
 export class CommandRegistrar {
 
     /**
-     * Register the command events for the extension
+     * Register the commands for the extension
      * @param context 
      */
     public registerCommandEvents(context: vscode.ExtensionContext): void {
