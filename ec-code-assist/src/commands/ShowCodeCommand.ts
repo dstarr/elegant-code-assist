@@ -83,8 +83,6 @@ export class ShowCodeCommand implements Command {
 
 		let pageModel: PageModel = await this._getPageModel();
 
-		console.debug(pageModel);
-
 		const htmlPath = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).with({ scheme: 'vscode-resource' });
 
 		let html = fs.readFileSync(htmlPath.fsPath, 'utf8');
