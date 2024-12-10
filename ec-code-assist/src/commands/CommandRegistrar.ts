@@ -1,6 +1,6 @@
 // a class that registers all the commands with the VS Code context
 import * as vscode from 'vscode';
-import { HelloWorldCommand, ShowCodeCommand, ShowModelsCommand } from './index';
+import { Command, HelloWorldCommand, ShowCodeCommand, ShowModelsCommand } from './index';
 
 /**
  * A class that registers all the commands with the VS Code context
@@ -14,26 +14,28 @@ export class CommandRegistrar {
     public registerCommandEvents(context: vscode.ExtensionContext): void {
 
         let disposable: vscode.Disposable;
+        let command;
+        let commands: { [key: string]: Command } = {};
 
         // Hello World command
-        const helloWorldCommand = new HelloWorldCommand();
-        disposable = vscode.commands.registerCommand(helloWorldCommand.name, () => {
-            helloWorldCommand.execute();
-        });
-        context.subscriptions.push(disposable);
+        command = new HelloWorldCommand();
+        commands[command.name] = command;
 
-        // Show Selected Code command
-        const showCodeCommand = new ShowCodeCommand(context);
-        disposable = vscode.commands.registerCommand(showCodeCommand.name, () => {
-            showCodeCommand.execute();
-        });
-        context.subscriptions.push(disposable);
-
+        // show code command
+        command = new ShowCodeCommand(context);
+        commands[command.name] = command;
+        
         // Show Models command
-        const showModelsCommand = new ShowModelsCommand();
-        disposable = vscode.commands.registerCommand(showModelsCommand.name, () => {
-            showModelsCommand.execute();
-        });
-        context.subscriptions.push(disposable);
+        command = new ShowModelsCommand();
+        commands[command.name] = command;
+        
+        // Register all commands with the context
+        for (const commandName in commands) {
+            const command = commands[commandName];
+            disposable = vscode.commands.registerCommand(command.name, () => {
+                command.execute();
+            });
+            context.subscriptions.push(disposable);
+        }
     }
 }

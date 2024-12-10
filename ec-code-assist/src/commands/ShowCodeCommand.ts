@@ -179,7 +179,7 @@ export class ShowCodeCommand implements Command {
 	 * - The entire document text if no text is selected.
 	 * @param editor The active text editor.
 	 */
-	private _getOriginalCode(editor: vscode.TextEditor) {
+	private _getOriginalCode(editor: vscode.TextEditor): { codeLanguage: string; originalCode: string; } {
 
 		let code: string = "No active document.";
 		let codeLanguage: string = '';
