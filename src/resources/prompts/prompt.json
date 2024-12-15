@@ -1,0 +1,15 @@
+{
+    "model": "{{modelName}}",
+    "messages": [
+        {
+            "role": "user",
+            "content": "{{code}}"
+        },
+        { 
+            "role": "assistant", 
+            "content": "{{systemPrompt}}"
+        }
+    ],
+    "stream": false,
+    "format": "{{schema}}"
+}

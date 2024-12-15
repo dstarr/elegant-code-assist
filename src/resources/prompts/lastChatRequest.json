@@ -1,0 +1,15 @@
+{
+    "model": "phi3:latest",
+    "messages": [
+        {
+            "role": "user",
+            "content": "enum Season {\n    Fall,\n    Winter,\n    Spring,\n    Summer\n  };\n  \n  let season: Season = Season.Fall;\n  console.log(whi chMonths(season));\n  \n  function whichMonths(season1: Season) {\n    let monthsInSeason: string;\n    \n    switch (season1) {\n        case Season.Fall:\n            monthsInSeason = \"September to November\";\n            break;\n        case Season.Winter:\n            monthsInSeason = \"December to February\";\n            break;\n        case Season.Spring:\n            monthsInSeason = \"March to May\";\n            break;\n        case Season.Summer:\n            monthsInSeason = \"June to August\";\n\n        default:\n            monthsInSeason = \"Invalid season\";\n            break;\n    }\n    \n    return monthsInSeason;\n}\n"
+        },
+        { 
+            "role": "assistant", 
+            "content": "You are a pair programming assistant, or a real-time code reviewer.\nReview the user's code and provide helpful suggestions for improving it.\nEach suggestion should include an explanation and a code example.\nMake each suggestion unique.\nThe code language is TypeScript.\n\nConsider the following when reviewing the user's code:\n\n1. Syntax or logic errors\n2. Potential bugs or edge cases\n3. Readability and maintainability\n4. Code quality and adherence to best practices\n5. Performance optimizations\n6. Any security concerns\n\nIn the JSON of the response follow these rules:\n\n- The 'codeExample' properties should only contain code.\n- The 'codeExample' properties should only contain suggested changes to the original code.\n- The 'codeExample' properties should contain at least 3 lines of code to provide context.\n- The 'codeExample' properties should contain at least 3 lines of code to provide context.\n- The 'explanation' property should use markdown\n- The 'explanation' property should always be populated.\n- The 'responseOverview' property should contain a summary of all suggestions.\n"
+        }
+    ],
+    "stream": false,
+    "format": {"type":"object","properties":{"overview":{"type":"string"},"suggestions":{"type":"array","items":{"type":"object","properties":{"explanation":{"type":"string"},"codeExample":{"type":"string"}},"required":["explanation","codeExample"],"additionalProperties":false}}},"required":["overview","suggestions"],"additionalProperties":false,"$schema":"http://json-schema.org/draft-07/schema#"}
+}
