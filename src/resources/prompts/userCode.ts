@@ -6,7 +6,7 @@ enum Season {
   };
   
   let season: Season = Season.Fall;
-  console.log(whi chMonths(season));
+  console.log(whichMonths(season));
   
   function whichMonths(season1: Season) {
     let monthsInSeason: string;
