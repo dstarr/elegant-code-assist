@@ -1,8 +1,9 @@
-import * as path from 'path';
-import * as fs from 'fs';
 import * as vscode from 'vscode';
+import { PromptGenerator } from '../util/PromptGenerator';
 import { Command } from './Command';
 import ollama, { ChatRequest, ChatResponse } from 'ollama';
+import { ResourceReader } from '../util/ResourceReader';
+
 
 /**
  * Interface for passing the code to show in the webview panel.
@@ -54,45 +55,23 @@ export class ShowCodeCommand implements Command {
 		// Get the active text editor column
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
-		// If the panel already exists, reveal it
-		if(this._panel) {
-			this._panel.webview.html = await this._getWebviewContent();
-			this._panel.reveal(column);
-		} else {
-			// Create a new webview panel
-			this._panel = vscode.window.createWebviewPanel(
-				this.name,
-				this._panelTitle,
-				column || vscode.ViewColumn.One,
-				this._panelOptions
-			);
-			this._panel.webview.html = await this._getWebviewContent();
+		// If the panel already exists, reveal it, otherwise, create a new panel
+		// if(this._panel) {
+		// 	this._panel.webview.html = await this._getWebViewHtml();
+		// 	this._panel.reveal(column);
+		// } else {
+		// 	this._panel = vscode.window.createWebviewPanel(
+		// 		this.name,
+		// 		this._panelTitle,
+		// 		column || vscode.ViewColumn.One,
+		// 		this._panelOptions
+		// 	);
+		// 	this._panel.webview.html = ResourceReader.getWebViewHtml(this._context);
 			
-			this._panel.onDidDispose(() => {
-				this._panel = undefined;
-			});
-		}
-		
-	}
-
-	/**
-	 * Get the HTML content for the webview panel.
-	 * @param panel The webview panel.
-	 */
-	private async _getWebviewContent(): Promise<string> {
-
-		let pageModel: PageModel = await this._getPageModel();
-
-		const htmlPath = vscode.Uri.file(path.join(this._context.extensionPath, 'src', 'resources', 'webviews', 'showSelectedCode.html')).with({ scheme: 'vscode-resource' });
-
-		let html = fs.readFileSync(htmlPath.fsPath, 'utf8');
-
-		// do token replacement in the HTML
-		html = html.replace('{{codeLanguage}}', pageModel.language);
-		html = html.replace('{{originalCode}}', pageModel.originalCode);
-		html = html.replace('{{chatCode}}', pageModel.chatReply);
-
-		return html;
+		// 	this._panel.onDidDispose(() => {
+		// 		this._panel = undefined;
+		// 	});
+		// }
 	}
 
 	/**
@@ -105,7 +84,7 @@ export class ShowCodeCommand implements Command {
 			language: '',
 			chatReply: ''
 		};
-		
+
 		const editor = vscode.window.activeTextEditor;
 		
 		// ensure a document is open
@@ -165,11 +144,12 @@ export class ShowCodeCommand implements Command {
 	 * @returns The chat request with the original code and language.
 	 */
 	private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: false; } {
-		// Intersection type combining ChatRequest and an inline type with stream property set to true
-		return {
-			model: this._context.workspaceState.get('ec_assist.activeModel') || '',
-			messages: [{ role: 'user', content: 'Why is the sky blue?' }]
-		} as ChatRequest & { stream: false; };
+		
+		const modelName: string = this._context.workspaceState.get('ec_assist.activeModel') || '';
+		const promptGenerator: PromptGenerator = new PromptGenerator();		
+		const prompt: ChatRequest = promptGenerator.generatePrompt(this._context, modelName, originalCode, codeLanguage);
+
+		return prompt as ChatRequest & { stream: false; };
 	}
 
 	/**
