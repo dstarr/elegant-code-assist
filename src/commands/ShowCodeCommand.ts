@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
-import { PromptGenerator } from '../util/PromptGenerator';
 import { Command } from './Command';
-import ollama, { ChatRequest, ChatResponse } from 'ollama';
 import { ResourceReader } from '../util/ResourceReader';
+import OllamaChatService from '../services/OllamaChatService';
 
 
 /**
@@ -67,13 +66,15 @@ export class ShowCodeCommand implements Command {
 				column || vscode.ViewColumn.One,
 				this._panelOptions
 			);
-			this._panel.webview.html = ResourceReader.getWebView(this._context);
+
+			this._panel.webview.html = this._getWebViewHtml(pageModel);
 			
 			this._panel.onDidDispose(() => {
 				this._panel = undefined;
 			});
 		}
 	}
+	
 	private _getWebViewHtml(pageModel: PageModel): string {
 		let html = ResourceReader.getWebView(this._context);
 		html = html.replace('{{originalCode}}', pageModel.originalCode);
@@ -83,7 +84,7 @@ export class ShowCodeCommand implements Command {
 	}
 
 	/**
-	 * Get the content to show in the webview panel HTML.
+	 * Get the content to show in the webview panel HTML
 	 */
 	private async _getPageModel(): Promise<PageModel> {
 
@@ -97,74 +98,26 @@ export class ShowCodeCommand implements Command {
 		
 		// ensure a document is open
 		if (editor) {
+			const ollamaChat = new OllamaChatService(this._context);
+
 			let codeLanguage: string;
 			let originalCode: string;
 
+			// get the user's code from the active document
 			({ codeLanguage, originalCode } = this._getOriginalCode(editor));
 			
 			pageModel.language = codeLanguage;
 			pageModel.originalCode = originalCode;
 
-			// Get the chat code
-			await this._getChatResponse(originalCode, codeLanguage)
-				.then((chatCode) => {
-					pageModel.chatReply = chatCode;
+			// Get the chat response from Ollama
+			await ollamaChat.chat(originalCode, codeLanguage)
+				.then((chatResponse: any) => {
+					// TODO: parse this into an HTML string
+					pageModel.chatReply = JSON.stringify(chatResponse);
 				});
 		}
 
 		return pageModel;
-	}
-
-	
-	/**
-	 * Get the chat response from ollama.
-	 * @param originalCode The original code.
-	 * @param codeLanguage The language of the original code.
-	 */
-	private _getChatResponse(originalCode: string, codeLanguage: string): Promise<string> {
-		return new Promise((resolve, reject) => {
-			let chatResponse: string = "DO NOT GOT IT";
-	
-			try {
-				// Send a request to the chat API response
-				const chatRequest: ChatRequest & { stream: false } = this._getChatPrompt(originalCode, codeLanguage);
-	
-				ollama.chat(chatRequest)
-					.then((response) => {
-						chatResponse = response.message.content;
-						resolve(chatResponse);
-					})
-					.catch((error) => {
-						console.error(error);
-						reject(error);
-					});
-			} catch (error) {
-				console.error(error);
-				reject(error);
-			}
-		});
-	}
-
-	/**
-	 * Get the chat prompt for ollama.
-	 * @param originalCode The original code.
-	 * @param codeLanguage The language of the original code.
-	 * @returns The chat request with the original code and language.
-	 */
-	private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: false; } {
-		
-		const modelName: string = this._context.workspaceState.get('ec_assist.activeModel') || '';
-		const promptGenerator: PromptGenerator = new PromptGenerator();		
-		const prompt: ChatRequest = promptGenerator.generatePrompt(
-			{
-				context: this._context, 
-				modelName: modelName, 
-				originalCode: originalCode, 
-				codeLanguage: codeLanguage
-			}
-		);
-
-		return prompt as ChatRequest & { stream: false; };
 	}
 
 	/**
