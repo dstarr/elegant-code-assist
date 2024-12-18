@@ -54,24 +54,32 @@ export class ShowCodeCommand implements Command {
 
 		// Get the active text editor column
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+		const pageModel = await this._getPageModel();
 
 		// If the panel already exists, reveal it, otherwise, create a new panel
-		// if(this._panel) {
-		// 	this._panel.webview.html = await this._getWebViewHtml();
-		// 	this._panel.reveal(column);
-		// } else {
-		// 	this._panel = vscode.window.createWebviewPanel(
-		// 		this.name,
-		// 		this._panelTitle,
-		// 		column || vscode.ViewColumn.One,
-		// 		this._panelOptions
-		// 	);
-		// 	this._panel.webview.html = ResourceReader.getWebViewHtml(this._context);
+		if(this._panel) {
+			this._panel.webview.html = this._getWebViewHtml(pageModel);
+			this._panel.reveal(column);
+		} else {
+			this._panel = vscode.window.createWebviewPanel(
+				this.name,
+				this._panelTitle,
+				column || vscode.ViewColumn.One,
+				this._panelOptions
+			);
+			this._panel.webview.html = ResourceReader.getWebView(this._context);
 			
-		// 	this._panel.onDidDispose(() => {
-		// 		this._panel = undefined;
-		// 	});
-		// }
+			this._panel.onDidDispose(() => {
+				this._panel = undefined;
+			});
+		}
+	}
+	private _getWebViewHtml(pageModel: PageModel): string {
+		let html = ResourceReader.getWebView(this._context);
+		html = html.replace('{{originalCode}}', pageModel.originalCode);
+		html = html.replace('{{language}}', pageModel.language);
+		html = html.replace('{{chatReply}}', pageModel.chatReply);
+		return html;
 	}
 
 	/**
@@ -98,7 +106,7 @@ export class ShowCodeCommand implements Command {
 			pageModel.originalCode = originalCode;
 
 			// Get the chat code
-			await this._getChatCode(originalCode, codeLanguage)
+			await this._getChatResponse(originalCode, codeLanguage)
 				.then((chatCode) => {
 					pageModel.chatReply = chatCode;
 				});
@@ -109,11 +117,11 @@ export class ShowCodeCommand implements Command {
 
 	
 	/**
-	 * Get the chat code from ollama.
+	 * Get the chat response from ollama.
 	 * @param originalCode The original code.
 	 * @param codeLanguage The language of the original code.
 	 */
-	private _getChatCode(originalCode: string, codeLanguage: string): Promise<string> {
+	private _getChatResponse(originalCode: string, codeLanguage: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let chatResponse: string = "DO NOT GOT IT";
 	
@@ -147,7 +155,14 @@ export class ShowCodeCommand implements Command {
 		
 		const modelName: string = this._context.workspaceState.get('ec_assist.activeModel') || '';
 		const promptGenerator: PromptGenerator = new PromptGenerator();		
-		const prompt: ChatRequest = promptGenerator.generatePrompt(this._context, modelName, originalCode, codeLanguage);
+		const prompt: ChatRequest = promptGenerator.generatePrompt(
+			{
+				context: this._context, 
+				modelName: modelName, 
+				originalCode: originalCode, 
+				codeLanguage: codeLanguage
+			}
+		);
 
 		return prompt as ChatRequest & { stream: false; };
 	}
@@ -165,6 +180,10 @@ export class ShowCodeCommand implements Command {
 		let codeLanguage: string = '';
 
 		const document = editor.document;
+		if (!document) {
+			return { codeLanguage, originalCode: code };
+		}
+
 		const selection = editor.selection;
 		codeLanguage = editor.document.languageId;
 

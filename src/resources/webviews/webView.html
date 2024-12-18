@@ -1,9 +1,7 @@
 `
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elegant Code Assist</title>
     <style>
@@ -18,13 +16,10 @@
             line-height: 1.5;
         }
     </style>
-
-    <head>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self';">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-        <script>hljs.highlightAll();</script>
-    </head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self';">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 
 <body>
@@ -32,13 +27,15 @@
 
     <p>This extension has a long way to go.</p>
 
+    <p>Used mode: {{model}}</p>
+
     <h2>Original code:</h2>
 
     <pre><code class="{{codeLanguage}}">{{originalCode}}</code></pre>
 
     <h2>Generated code:</h2>
 
-    <pre><code class="{{codeLanguage}}">{{chatCode}}</code></pre>
+    <pre><code class="{{codeLanguage}}">{{chatReply}}</code></pre>
 
 </body>
 

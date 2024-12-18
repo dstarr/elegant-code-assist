@@ -17,12 +17,12 @@ export class ResourceReader {
 
     public static getPromptJson(context: vscode.ExtensionContext): string {
         const path: string = new FilePathGenerator().getFilePaths(context).PromptJsonPath;
-        return path;
+        return fs.readFileSync(path, 'utf8');
     }
 
     public static getLastChatRequest(context: vscode.ExtensionContext): string {
         const path: string = new FilePathGenerator().getFilePaths(context).LastChatRequestPath;
-        return path;
+        return fs.readFileSync(path, 'utf8');    
     }
 }
 
@@ -35,8 +35,8 @@ class FilePathGenerator {
         return {
             SystemPromptPath: path.join(resourcesPath, 'prompts', 'systemPrompt.txt'),
             PromptJsonPath: path.join(resourcesPath, 'prompts', 'promptTemplate.json'),
-            LastChatRequestPath: path.join(context.extensionPath, 'prompts', 'lastChatRequest.json'),
-            WebView: path.join(context.extensionPath, 'webviews', 'showSelectedCode.html'),
+            LastChatRequestPath: path.join(resourcesPath, 'lastChatRequest.json'),
+            WebView: path.join(resourcesPath, 'webviews', 'webView.html'),
         };
     }
 
