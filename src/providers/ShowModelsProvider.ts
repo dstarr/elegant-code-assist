@@ -7,7 +7,7 @@ import ollama from 'ollama';
  */
 export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
  
-    private _models: ModelItem[] = [];
+    // private _models: ModelItem[] = [];
     
     private readonly _context: vscode.ExtensionContext;
 
@@ -37,8 +37,8 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
         if (element) {
             return Promise.resolve([]);
         } else {
-            await this._fetchModels();
-            return Promise.resolve(this._models);
+            
+            return Promise.resolve(this._fetchModels());
         }
     }
 
@@ -52,17 +52,16 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
     /**
      * Fetches the models from the backend service and populates the models array.
      */
-    private async _fetchModels(): Promise<void> {
+    private async _fetchModels(): Promise<ModelItem[]> {
 
         const currentActiveModel: string | undefined = this._context.workspaceState.get<string>('ec_assist.activeModel');
         let modelIsAssigned: boolean = currentActiveModel !== '' && currentActiveModel !== undefined;
 
+        let models: ModelItem[] = [];
+
         try {
             await ollama.list()
                         .then((modelsResponse: any) => { 
-                            // Clear the models array
-                            this._models = [];
-                            
                             // Add models to the models array
                             modelsResponse.models.forEach((model: any) => {
 
@@ -84,13 +83,15 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                                     console.debug('Active model:', model.name);
                                 } 
 
-                                this._models.push(modelItem);
+                                models.push(modelItem);
                             });
                         });
             
         } catch (error) {
             console.error('Error fetching models:', error);
         }
+
+        return models;
     }
 }
 

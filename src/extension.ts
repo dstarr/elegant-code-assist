@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { CommandRegistrar } from './commands/CommandRegistrar';
 import { ShowModelsProvider } from './providers';
-import { ModelExplorerView } from './views/ModelExplorerView';
 import { NodeDependenciesProvider } from './providers/NodeDependencyProvider';
 
 /**
@@ -19,17 +18,26 @@ export function activate(context: vscode.ExtensionContext) {
 	const commandRegistrar = new CommandRegistrar();
 	commandRegistrar.registerCommandEvents(context);
 
-	// register providers
-	const rootPath = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
-								? vscode.workspace.workspaceFolders[0].uri.fsPath
-								: '';
+	// register the node dependecies provider
+	const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+	console.debug('Root path:', rootPath);
+	if(rootPath) {
+		vscode.window.registerTreeDataProvider(
+			'nodeDependencies',
+			new NodeDependenciesProvider(rootPath)
+		);
+	}
 
+	const showModelsProvider = new ShowModelsProvider(context);
+	showModelsProvider.onDidChangeTreeData(() => {
+		
+	});
+
+	// register the show models provider
 	vscode.window.registerTreeDataProvider(
-		'nodeDependencies',
-		new NodeDependenciesProvider(rootPath)
+		'ec_assist_modelsView',
+		showModelsProvider
 	);
-
-
 }
 
 /**
