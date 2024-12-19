@@ -40,6 +40,10 @@
         {
           "id": "ec_assist_modelsView",
           "name": "Ollama Models"
+        },
+        {
+          "id": "nodeDependencies",
+          "name": "Node Dependencies"
         }
       ]
     },
