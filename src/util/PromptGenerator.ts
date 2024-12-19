@@ -1,10 +1,8 @@
 
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import fs from 'fs';
 import { ChatRequest } from 'ollama';
 import * as vscode from 'vscode';
-import path from 'path';
 import { ResourceReader } from './ResourceReader';
 
 /**
