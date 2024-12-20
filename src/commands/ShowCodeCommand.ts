@@ -93,7 +93,9 @@ export class ShowCodeCommand implements Command {
 				chatReply.suggestions.forEach((suggestion: any) => {
 					chatReplyHtml += `<div class="chat-reply__suggestion">
 										<div class="chat-reply__suggestion__explanation">${suggestion.explanation}</div>
-										<div class="chat-reply__suggestion__codeExample">${suggestion.codeExample}</div>
+										<div class="chat-reply__suggestion__codeExample">
+											<pre><code class="${pageModel.language}">${suggestion.codeExample}</code></pre>
+										</div>
 									  </div>`;
 				});
 				chatReplyHtml += `</div></div>`;

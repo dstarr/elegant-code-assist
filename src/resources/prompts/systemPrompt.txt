@@ -18,6 +18,6 @@ In the JSON of the response follow these rules:
 - 'codeExample' properties should only contain code.
 - 'codeExample' properties should only contain suggested changes to the original code.
 - 'codeExample' properties should contain at least 3 lines of code to provide context.
-- 'explanation' property should use markdown
+- 'explanation' property should use HTML
 - 'explanation' property should always be populated.
 - 'responseOverview' property should contain a summary of all suggestions.
