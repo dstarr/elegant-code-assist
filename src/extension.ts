@@ -21,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// register the node dependecies provider
 	const rootPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 	console.debug('Root path:', rootPath);
+	
 	if(rootPath) {
 		vscode.window.registerTreeDataProvider(
 			'nodeDependencies',
@@ -29,15 +30,24 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	const showModelsProvider = new ShowModelsProvider(context);
-	showModelsProvider.onDidChangeTreeData(() => {
-		
+	const treeView = vscode.window.createTreeView('ec_assist_modelsView', {
+		treeDataProvider: showModelsProvider,
+		canSelectMany: false
 	});
 
-	// register the show models provider
-	vscode.window.registerTreeDataProvider(
-		'ec_assist_modelsView',
-		showModelsProvider
-	);
+	treeView.onDidChangeSelection(async (event) => {
+		const selectedItems = event.selection;
+
+		if (selectedItems.length > 0) {
+			let selectedItem = selectedItems[0];
+			// selectedItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+			await context.workspaceState.update('ec-code-assist.activeModel', selectedItem.label)
+				.then(() => {
+					showModelsProvider.refresh();
+					console.debug('New model selected:', selectedItem.label);
+				});
+		}
+	});
 }
 
 /**

@@ -55,12 +55,15 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
     private async _fetchModels(): Promise<ModelItem[]> {
 
         const currentActiveModel: string | undefined = this._context.workspaceState.get<string>('ec_assist.activeModel');
-        let modelIsAssigned: boolean = currentActiveModel !== '' && currentActiveModel !== undefined;
 
         let models: ModelItem[] = [];
 
         try {
             await ollama.list()
+                        // .then((modelsResponse: any) => { 
+                        //     // alpabetize the models array by name
+                        //     return modelsResponse.models.sort((a: any, b: any) => a.name.localeCompare(b.name));
+                        // })
                         .then((modelsResponse: any) => { 
                             // Add models to the models array
                             modelsResponse.models.forEach((model: any) => {
@@ -70,19 +73,21 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                                 // if no model is currently active, set the first model as active
                                 // set the icon for the active model node
                                 // save the active model in the workspace state
-                                if(!modelIsAssigned) {
+                                if(!currentActiveModel) {
                                     modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                                    modelIsAssigned = true;
-                                    this._context.workspaceState.update('ec_assist.activeModel', model.name)
+                                    this._context.workspaceState.update('ec_assist.activeModel', modelItem.label)
                                             .then(() => {
-                                                console.debug('First model set active:', model.name);
+                                                console.debug('First model set active:', modelItem.label);
                                             });
-                                            // set the icon for the active model node
-                                } else if(model.name === currentActiveModel) {
-                                    modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                                    console.debug('Active model:', model.name);
                                 } 
-
+                                // if a model is currently active, set the icon for the active model node
+                                else if(currentActiveModel === model.name) {
+                                    modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                                    console.debug('Active model is already:', modelItem.label);
+                                } else {
+                                    console.debug('Model inactive:', modelItem.label);
+                                }
+                                
                                 models.push(modelItem);
                             });
                         });
