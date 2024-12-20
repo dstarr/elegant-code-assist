@@ -30,7 +30,6 @@ export default class ChatReplyHtmlBuilder {
         if (pageModel.chatReply) {
 
             const chatReply = JSON.parse(pageModel.chatReply);
-            console.debug(JSON.stringify(chatReply, null, 2));
 
             if (!chatReply) {
                 chatReplyHtml = `<div class="chat-reply">No message to report</div>`;
