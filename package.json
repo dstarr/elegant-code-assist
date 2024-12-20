@@ -33,6 +33,11 @@
         "command": "ec_assist_showModels",
         "title": "Show Available Models",
         "category": "EC"
+      },
+      {
+        "command": "ec_assist_showWorkspaceState",
+        "title": "Show Workspace State",
+        "category": "EC"
       }
     ],
     "views": {
