@@ -1,17 +1,7 @@
 import * as vscode from 'vscode';
 import { Command } from './Command';
-import { ResourceReader } from '../util/ResourceReader';
 import OllamaChatService from '../services/OllamaChatService';
-
-
-/**
- * Interface for passing the code to show in the webview panel.
- */
-interface PageModel {
-	originalCode: string;
-	language: string;
-	chatReply: string;
-}
+import ChatReplyHtmlBuilder, { PageModel } from '../util/ChatReplyHtmlBuilder';
 
 /**
  * Command to show the code in a webview panel.
@@ -51,13 +41,15 @@ export class ShowCodeCommand implements Command {
 
         console.debug(`Command ${this.name} executed`);
 
+		const htmlBuilder: ChatReplyHtmlBuilder = new ChatReplyHtmlBuilder(this._context);
+
 		// Get the active text editor column
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 		const pageModel = await this._getPageModel();
 
 		// If the panel already exists, reveal it, otherwise, create a new panel
 		if(this._panel) {
-			this._panel.webview.html = this._getWebViewHtml(pageModel);
+			this._panel.webview.html = htmlBuilder.getWebViewHtml(pageModel);
 			this._panel.reveal(column);
 		} else {
 			this._panel = vscode.window.createWebviewPanel(
@@ -67,7 +59,7 @@ export class ShowCodeCommand implements Command {
 				this._panelOptions
 			);
 
-			this._panel.webview.html = this._getWebViewHtml(pageModel);
+			this._panel.webview.html = htmlBuilder.getWebViewHtml(pageModel);
 			
 			this._panel.onDidDispose(() => {
 				this._panel = undefined;
@@ -75,48 +67,14 @@ export class ShowCodeCommand implements Command {
 		}
 	}
 	
-	private _getWebViewHtml(pageModel: PageModel): string {
-		
-		// structure the chat reply in HTML
-		let chatReplyHtml = '';
-		if (pageModel.chatReply) {
-
-			const chatReply = JSON.parse(pageModel.chatReply);
-			console.debug(JSON.stringify(chatReply, null, 2));
-
-			if (!chatReply) {
-				chatReplyHtml = `<div class="chat-reply">No message to report</div>`;
-			} else {
-				chatReplyHtml = `<div class="chat-reply">`;
-				chatReplyHtml += `<div class="chat-reply__overview">${chatReply.overview}</div>`;
-				chatReplyHtml += `<div class="chat-reply__suggestions">`;
-				chatReply.suggestions.forEach((suggestion: any) => {
-					chatReplyHtml += `<div class="chat-reply__suggestion">
-										<div class="chat-reply__suggestion__explanation">${suggestion.explanation}</div>
-										<div class="chat-reply__suggestion__codeExample">
-											<pre><code class="${pageModel.language}">${suggestion.codeExample}</code></pre>
-										</div>
-									  </div>`;
-				});
-				chatReplyHtml += `</div></div>`;
-			}
-		}
-
-		// make the token replacements in the chat response
-		let html = ResourceReader.getWebView(this._context);
-		html = html.replace('{{originalCode}}', pageModel.originalCode);
-		html = html.replace('{{language}}', pageModel.language);
-		html = html.replace('{{chatReply}}', chatReplyHtml);
-
-		return html;
-	}
-
 	/**
 	 * Get the content to show in the webview panel HTML
 	 */
 	private async _getPageModel(): Promise<PageModel> {
 
+
 		let pageModel: PageModel = {
+			model: this._context.workspaceState.get('ec-code-assist.activeModel') || '',
 			originalCode: 'No active document.',
 			language: '',
 			chatReply: ''
@@ -140,7 +98,6 @@ export class ShowCodeCommand implements Command {
 			// Get the chat response from Ollama
 			await ollamaChat.chat(originalCode, codeLanguage)
 				.then((chatResponse: any) => {
-					// TODO: parse this into an HTML string
 					pageModel.chatReply = JSON.stringify(chatResponse);
 				});
 		}
