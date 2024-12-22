@@ -24,8 +24,6 @@ export async function activate(context: vscode.ExtensionContext) {
  */
 function initializeDataProviders(context: vscode.ExtensionContext): void {
 
-	console.debug('initializeDataProviders');
-
 	const showModelsProvider = new ShowModelsProvider(context);
 	const treeView = vscode.window.createTreeView('ec_assist_modelsView', {
 		treeDataProvider: showModelsProvider,
@@ -37,16 +35,6 @@ function initializeDataProviders(context: vscode.ExtensionContext): void {
 		if (event.visible) {
 			showModelsProvider.refresh();
 		}
-	});
-
-	// Handle element expansion
-	treeView.onDidExpandElement(event => {
-		console.log('Element expanded:', event.element);
-	});
-
-	// Handle element collapse
-	treeView.onDidCollapseElement(event => {
-		console.log('Element collapsed:', event.element);
 	});
 
 	treeView.onDidChangeSelection( (event) => {
