@@ -22,7 +22,7 @@ export async function activate(context: vscode.ExtensionContext) {
 /**
  * Initialize the data providers for the extension
  */
-async function initializeDataProviders(context: vscode.ExtensionContext): Promise<void> {
+function initializeDataProviders(context: vscode.ExtensionContext): void {
 
 	console.debug('initializeDataProviders');
 
@@ -34,7 +34,6 @@ async function initializeDataProviders(context: vscode.ExtensionContext): Promis
 
 	// Handle visibility changes
 	treeView.onDidChangeVisibility(event => {
-		console.log('Tree view visibility changed. Visibility: ', event.visible.valueOf());
 		if (event.visible) {
 			showModelsProvider.refresh();
 		}
@@ -66,19 +65,6 @@ async function initializeDataProviders(context: vscode.ExtensionContext): Promis
 					showModelsProvider.updateIconPathForSelectedItem(selectedItem);
 				});
         }
-
-
-
-
-		// Update the active model in the workspace state
-		return new Promise<void>((resolve, reject) => {
-			const modelItem = selectedItem as ModelItem;
-			context.workspaceState.update('ec_assist.activeModel', modelItem.name);
-			resolve();
-		});
-
-
-		
 	});
 }
 

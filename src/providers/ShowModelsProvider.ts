@@ -13,16 +13,23 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<ModelItem | ModelItem[] | undefined | null | void> = new vscode.EventEmitter<ModelItem | ModelItem[] | undefined | null | void>();
     
+    /**
+     * An event that is fired when the tree data changes.
+     */
     public readonly onDidChangeTreeData: vscode.Event<ModelItem | ModelItem[] | undefined | null | void> = this._onDidChangeTreeData.event;
 
+    /**
+     * Initializes a new instance of the ShowModelsProvider class.
+     * @param {vscode.ExtensionContext} context The extension context.
+     */    
     constructor(context: vscode.ExtensionContext) {
         this._context = context;
     }
 
     /**
       * Returns the tree item for the given model item.
-      * @param element The model item to be displayed.
-      * @returns The tree item for the given model item.
+      * @param {ModelItem} element The model item to be displayed.
+      * @returns {ModelItem} The tree item for the given model item.
       */
     public getTreeItem(element: ModelItem): vscode.TreeItem {
 
@@ -43,8 +50,6 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * @returns 
      */
     async getChildren(element?: ModelItem): Promise<ModelItem[]> {
-        
-        console.debug('Getting children for tree view');
         
         return new Promise((resolve, reject) => {
             this._fetchModels()
@@ -69,10 +74,13 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * Refreshes the tree view.
      */
     public refresh(): void {
-        console.debug('Refreshing tree view');
         this._onDidChangeTreeData.fire();
     }
 
+    /**
+     * Updates the icon path for the selected item.
+     * @param {ModelItem} selectedItem The selected item.
+     */
     public updateIconPathForSelectedItem(selectedItem: ModelItem): void {
         const storedModel: string = this._context.workspaceState.get<string>('ec_assist.activeModel') || '';
     
@@ -91,8 +99,6 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * Fetches the models from the backend service and populates the models array.
      */
     private async _fetchModels(): Promise<ModelItem[]> {
-
-        // const currentActiveModel: string | undefined = this._context.workspaceState.get<string>('ec_assist.activeModel');
 
         let models: ModelItem[] = [];
 
