@@ -22,7 +22,7 @@ export async function activate(context: vscode.ExtensionContext) {
 /**
  * Initialize the data providers for the extension
  */
-function initializeDataProviders(context: vscode.ExtensionContext) {
+async function initializeDataProviders(context: vscode.ExtensionContext): Promise<void> {
 
 	console.debug('initializeDataProviders');
 
@@ -50,35 +50,39 @@ function initializeDataProviders(context: vscode.ExtensionContext) {
 		console.log('Element collapsed:', event.element);
 	});
 
-	treeView.onDidChangeSelection(async (event) => {
+	treeView.onDidChangeSelection( (event) => {
 
-		console.debug('onDidChangeSelection');
-		console.debug(event.selection);
+		if(event.selection.length < 0) {
+			return;
+		}
+		
+		console.debug('onDidChangeSelectionL ', event.selection[0].label);
 
-		// const selectedItems = event.selection;
-		// if(selectedItems.length > 0) {
-			// 	this._refreshModelsVIew(treeView), event.selection[0];
-			
-			// if (selectedItems.length > 0) {
-				// 	let selectedItem = selectedItems[0];
-				// 	context.workspaceState.update('ec-code-assist.activeModel', selectedItem.label)
-				// 		.then(() => {
-					// 			selectedItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-					// 			showModelsProvider.refresh();
-					// 		});
-					// }};
+		const selectedItem = event.selection[0];
+		if (event.selection.length > 0) {
+            const selectedItem = event.selection[0] as ModelItem;
+            context.workspaceState.update('ec_assist.activeModel', selectedItem.name)
+				.then(() => {
+					showModelsProvider.updateIconPathForSelectedItem(selectedItem);
+				});
+        }
+
+
+
+
+		// Update the active model in the workspace state
+		return new Promise<void>((resolve, reject) => {
+			const modelItem = selectedItem as ModelItem;
+			context.workspaceState.update('ec_assist.activeModel', modelItem.name);
+			resolve();
+		});
+
+
+		
 	});
 }
 
 
-function refreshModelsVIew(context: vscode.ExtensionContext, treeView: vscode.TreeView<ModelItem>, selectedItem: ModelItem): void {
-
-	context.workspaceState.update('ec-code-assist.activeModel', selectedItem.label)
-			.then(() => {
-				selectedItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-			});
-	
-}
 
 // This method is called when your extension is deactivated
 export function deactivate() { }

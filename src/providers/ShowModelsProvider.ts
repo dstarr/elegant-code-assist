@@ -11,9 +11,9 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
     
     private readonly _context: vscode.ExtensionContext;
 
-    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void> = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
+    private _onDidChangeTreeData: vscode.EventEmitter<ModelItem | ModelItem[] | undefined | null | void> = new vscode.EventEmitter<ModelItem | ModelItem[] | undefined | null | void>();
     
-    public readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
+    public readonly onDidChangeTreeData: vscode.Event<ModelItem | ModelItem[] | undefined | null | void> = this._onDidChangeTreeData.event;
 
     constructor(context: vscode.ExtensionContext) {
         this._context = context;
@@ -25,6 +25,15 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
       * @returns The tree item for the given model item.
       */
     public getTreeItem(element: ModelItem): vscode.TreeItem {
+
+        const storedModel: string = this._context.workspaceState.get<string>('ec_assist.activeModel') || '';
+
+        element.label = element.name;
+        if(element.name === storedModel) {
+            element.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+        }
+        
+        
         return element;
     }
 
@@ -40,7 +49,15 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
         return new Promise((resolve, reject) => {
             this._fetchModels()
                 .then(models => {
-                    console.debug('Models fetched:', models);
+                    // put a chat icon next to the active model
+                    models.forEach(model => {
+                        const storedModel = this._context.workspaceState.get<string>('ec_assist.activeModel');
+                        if(storedModel === model.name) {
+                            model.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                        } else if (storedModel === undefined) {
+                            models[0].iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                        }
+                    });
                     resolve(models);
                 })
                 .catch(err => reject(err));
@@ -54,6 +71,20 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
     public refresh(): void {
         console.debug('Refreshing tree view');
         this._onDidChangeTreeData.fire();
+    }
+
+    public updateIconPathForSelectedItem(selectedItem: ModelItem): void {
+        const storedModel: string = this._context.workspaceState.get<string>('ec_assist.activeModel') || '';
+    
+        // Update the icon path for the selected item
+        if (selectedItem.name === storedModel) {
+            selectedItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+        } else {
+            selectedItem.iconPath = undefined; // or set to a default icon
+        }
+    
+        // Refresh the tree view
+        this.refresh();
     }
 
     /**
@@ -71,33 +102,6 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                             // alpabetize the models array by name
                             models = modelsResponse.models.sort((a: any, b: any) => a.name.localeCompare(b.name));
                         });
-                        // .then((modelsResponse: any) => { 
-                        //     // Add models to the models array
-                        //     modelsResponse.models.forEach((model: any) => {
-
-                        //         let modelItem = new ModelItem(model.name);
-                                
-                        //         // if no model is currently active, set the first model as active
-                        //         // set the icon for the active model node
-                        //         // save the active model in the workspace state
-                        //         if(!currentActiveModel) {
-                        //             modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                        //             this._context.workspaceState.update('ec_assist.activeModel', modelItem.label)
-                        //                     .then(() => {
-                        //                         console.debug('First model set active:', modelItem.label);
-                        //                     });
-                        //         } 
-                        //         // if a model is currently active, set the icon for the active model node
-                        //         else if(currentActiveModel === model.name) {
-                        //             modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                        //             console.debug('Active model is already:', modelItem.label);
-                        //         } else {
-                        //             console.debug('Model inactive:', modelItem.label);
-                        //         }
-                                
-                        //         models.push(modelItem);
-                        //     });
-                        // });
             
         } catch (error) {
             console.error('Error fetching models:', error);
@@ -111,7 +115,15 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
  * Represents a model item, a node in the tree view.
  */
 export class ModelItem extends vscode.TreeItem {
+    
+    name: string;
+
+    /**
+     * Initializes a new instance of the ModelItem class.
+     * @param label The label of the model item.
+     */
     constructor(label: string) {
         super(label, vscode.TreeItemCollapsibleState.None);
+        this.name = label;
     }
 }
