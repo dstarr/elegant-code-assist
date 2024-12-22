@@ -37,15 +37,36 @@ export class ShowCodeCommand implements Command {
 	 * 	- Get the code to show in the panel.
 	 * 	- Load the code in the webview panel.
 	*/
-	public async execute(): Promise<void> {
+	public execute(): void {
 
         console.debug(`Command ${this.name} executed`);
-		this._showWebViewPanel();
+		
+		const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
+
+		if (!editor) {
+			return;
+		}
+
+		// Get the original code from the active document
+		const { codeLanguage, originalCode } = this._getOriginalCode(editor);
+
+		// Show the code in the webview panel
+		this._showWebViewPanel(codeLanguage, originalCode);
+		
+
+
+		// chat with Ollama
+		// const ollamaChat = new OllamaChatService(this._context);
+		// ollamaChat.chat(originalCode, codeLanguage)
+		// 	.then((chatResponse: any) => {
+		// 		let chatReply = JSON.stringify(chatResponse);
+		// 	});
+		
 	}
 	
-	private async _showWebViewPanel() {
+	private _showWebViewPanel(codeLanguage: string, originalCode: string): void {
 
-		const pageModel = await this._getPageModel();
+		const pageModel = this._getPageModel(codeLanguage, originalCode);
 		const htmlBuilder: ChatReplyHtmlBuilder = new ChatReplyHtmlBuilder(this._context);
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 		
@@ -71,37 +92,16 @@ export class ShowCodeCommand implements Command {
 	/**
 	 * Get the content to show in the webview panel HTML
 	 */
-	private async _getPageModel(): Promise<PageModel> {
-
+	private _getPageModel(codeLanguage: string, originalCode: string): PageModel {
 
 		let pageModel: PageModel = {
 			model: this._context.workspaceState.get('ec-code-assist.activeModel') || '',
 			originalCode: 'No active document.',
-			language: '',
-			chatReply: ''
+			language: ''
 		};
 
-		const editor = vscode.window.activeTextEditor;
-		
-		// ensure a document is open
-		if (editor) {
-			
-			let codeLanguage: string;
-			let originalCode: string;
-			
-			// get the user's code from the active document
-			({ codeLanguage, originalCode } = this._getOriginalCode(editor));
-			
-			pageModel.language = codeLanguage;
-			pageModel.originalCode = originalCode;
-			
-			// const ollamaChat = new OllamaChatService(this._context);
-			// Get the chat response from Ollama
-			// await ollamaChat.chat(originalCode, codeLanguage)
-			// 	.then((chatResponse: any) => {
-			// 		pageModel.chatReply = JSON.stringify(chatResponse);
-			// 	});
-		}
+		pageModel.language = codeLanguage;
+		pageModel.originalCode = originalCode;
 
 		return pageModel;
 	}

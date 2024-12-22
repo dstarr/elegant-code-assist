@@ -8,7 +8,7 @@ export interface PageModel {
     model: string;
     originalCode: string;
     language: string;
-    chatReply: string;
+    chatReply?: string;
 }
 
 export default class ChatReplyHtmlBuilder {
