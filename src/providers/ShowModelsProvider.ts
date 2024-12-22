@@ -34,10 +34,12 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * @returns 
      */
     async getChildren(element?: ModelItem): Promise<ModelItem[]> {
+        
+        console.debug('Getting children for element:', element?.label);
+        
         if (element) {
             return Promise.resolve([]);
         } else {
-            
             return Promise.resolve(this._fetchModels());
         }
     }
