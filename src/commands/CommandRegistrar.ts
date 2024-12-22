@@ -19,7 +19,7 @@ export class CommandRegistrar {
     public registerCommandEvents(context: vscode.ExtensionContext): void {
 
         let disposable: vscode.Disposable;
-        let command;
+        let command: Command;
         let commands: { [key: string]: Command } = {};
 
         // Hello World command
@@ -35,7 +35,7 @@ export class CommandRegistrar {
         commands[command.name] = command;
         
         // Show Models command
-        command = new ShowModelsCommand();
+        command = new ShowModelsCommand(context);
         commands[command.name] = command;
         
         // Register all commands with the context

@@ -35,19 +35,24 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      */
     async getChildren(element?: ModelItem): Promise<ModelItem[]> {
         
-        console.debug('Getting children for element:', element?.label);
+        console.debug('Getting children for tree view');
         
-        if (element) {
-            return Promise.resolve([]);
-        } else {
-            return Promise.resolve(this._fetchModels());
-        }
-    }
+        return new Promise((resolve, reject) => {
+            this._fetchModels()
+                .then(models => {
+                    console.debug('Models fetched:', models);
+                    resolve(models);
+                })
+                .catch(err => reject(err));
+        });
+
+}
 
     /**
      * Refreshes the tree view.
      */
     public refresh(): void {
+        console.debug('Refreshing tree view');
         this._onDidChangeTreeData.fire();
     }
 
@@ -56,43 +61,43 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      */
     private async _fetchModels(): Promise<ModelItem[]> {
 
-        const currentActiveModel: string | undefined = this._context.workspaceState.get<string>('ec_assist.activeModel');
+        // const currentActiveModel: string | undefined = this._context.workspaceState.get<string>('ec_assist.activeModel');
 
         let models: ModelItem[] = [];
 
         try {
             await ollama.list()
-                        // .then((modelsResponse: any) => { 
-                        //     // alpabetize the models array by name
-                        //     return modelsResponse.models.sort((a: any, b: any) => a.name.localeCompare(b.name));
-                        // })
                         .then((modelsResponse: any) => { 
-                            // Add models to the models array
-                            modelsResponse.models.forEach((model: any) => {
-
-                                let modelItem = new ModelItem(model.name);
-                                
-                                // if no model is currently active, set the first model as active
-                                // set the icon for the active model node
-                                // save the active model in the workspace state
-                                if(!currentActiveModel) {
-                                    modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                                    this._context.workspaceState.update('ec_assist.activeModel', modelItem.label)
-                                            .then(() => {
-                                                console.debug('First model set active:', modelItem.label);
-                                            });
-                                } 
-                                // if a model is currently active, set the icon for the active model node
-                                else if(currentActiveModel === model.name) {
-                                    modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                                    console.debug('Active model is already:', modelItem.label);
-                                } else {
-                                    console.debug('Model inactive:', modelItem.label);
-                                }
-                                
-                                models.push(modelItem);
-                            });
+                            // alpabetize the models array by name
+                            models = modelsResponse.models.sort((a: any, b: any) => a.name.localeCompare(b.name));
                         });
+                        // .then((modelsResponse: any) => { 
+                        //     // Add models to the models array
+                        //     modelsResponse.models.forEach((model: any) => {
+
+                        //         let modelItem = new ModelItem(model.name);
+                                
+                        //         // if no model is currently active, set the first model as active
+                        //         // set the icon for the active model node
+                        //         // save the active model in the workspace state
+                        //         if(!currentActiveModel) {
+                        //             modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                        //             this._context.workspaceState.update('ec_assist.activeModel', modelItem.label)
+                        //                     .then(() => {
+                        //                         console.debug('First model set active:', modelItem.label);
+                        //                     });
+                        //         } 
+                        //         // if a model is currently active, set the icon for the active model node
+                        //         else if(currentActiveModel === model.name) {
+                        //             modelItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                        //             console.debug('Active model is already:', modelItem.label);
+                        //         } else {
+                        //             console.debug('Model inactive:', modelItem.label);
+                        //         }
+                                
+                        //         models.push(modelItem);
+                        //     });
+                        // });
             
         } catch (error) {
             console.error('Error fetching models:', error);
