@@ -5,7 +5,7 @@ import ChatReplyHtmlBuilder, { PageModel } from '../services/ChatReplyHtmlBuilde
 /**
  * Command to show the code in a webview panel.
  */
-export class ShowCodeCommand implements Command {
+export class SendCodeCommand implements Command {
 
 	private readonly _context: vscode.ExtensionContext;
 	private readonly _panelTitle: string = 'Elegant Code Assist';
@@ -18,7 +18,7 @@ export class ShowCodeCommand implements Command {
 	/**
 	 * This is the command identifier that the command is registered with.
 	 */
-	public name: string = 'ec_assist_showCode';
+	public name: string = 'ec_assist_sendCode';
 
 	/**
 	 * Constructor.

@@ -2,7 +2,7 @@
 import * as vscode from 'vscode';
 import { Command, 
          HelloWorldCommand, 
-         ShowCodeCommand, 
+         SendCodeCommand, 
          ShowModelsCommand, 
          ShowWorkspaceStateCommand 
        } from './index';
@@ -31,7 +31,7 @@ export class CommandRegistrar {
         commands[command.name] = command;
 
         // show code command
-        command = new ShowCodeCommand(context);
+        command = new SendCodeCommand(context);
         commands[command.name] = command;
         
         // Show Models command
