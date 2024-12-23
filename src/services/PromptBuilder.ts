@@ -3,12 +3,12 @@ import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { ChatRequest } from 'ollama';
 import * as vscode from 'vscode';
-import { ResourceReader } from './ResourceReader';
+import { ResourceReader } from '../util/ResourceReader';
 
 /**
  * Class to generate the prompt for the chat request.
  */
-export class PromptGenerator {
+export class PromptBuilder {
     
     private readonly _schema: any;
 

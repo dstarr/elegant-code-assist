@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import ollama, { ChatRequest } from "ollama";
-import { PromptGenerator } from "../util/PromptGenerator";
+import { PromptBuilder } from "./PromptBuilder";
 
 /**
  * Class representing a chat reply from Ollama.
@@ -72,8 +72,8 @@ export default class OllamaChatService {
         private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: false; } {
             
             const modelName: string = this._context.workspaceState.get('ec_assist.activeModel') || '';
-            const promptGenerator: PromptGenerator = new PromptGenerator();		
-            const prompt: ChatRequest = promptGenerator.generatePrompt(
+            const promptBuilder: PromptBuilder = new PromptBuilder();		
+            const prompt: ChatRequest = promptBuilder.generatePrompt(
                 {
                     context: this._context, 
                     modelName: modelName, 
