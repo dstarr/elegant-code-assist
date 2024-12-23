@@ -39,6 +39,12 @@ export default class OllamaChatService {
 
     constructor(private _context: vscode.ExtensionContext) {}
 
+    /**
+     * Talk to the Ollama chat protocol 
+     * @param originalCode 
+     * @param codeLanguage 
+     * @returns { Promise<OllamaChatReply> } The chat reply from Ollama.
+     */
     public async chat(originalCode: string, codeLanguage: string): Promise<OllamaChatReply> {
 
         try {
