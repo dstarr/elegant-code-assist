@@ -23,6 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
  */
 function initializeDataProviders(context: vscode.ExtensionContext): void {
 
+	// Initialize the provider registrar to be used for registering the data providers
 	const providerRegistrar = new ProvideRegistrar(context);
 	
 	// Initialize the data provider for the models tree view

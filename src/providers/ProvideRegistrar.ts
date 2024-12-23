@@ -8,11 +8,19 @@ export class ProvideRegistrar {
 
     private readonly _context: vscode.ExtensionContext;
 
+    /**
+     * Constructor.
+     * @param context The extension context.
+     */
     constructor(context: vscode.ExtensionContext) {
         console.debug(`ProviderBuilder created`);
         this._context = context;
     }
 
+    /**
+     * Register the model tree provider and configure the tree view events.
+     * @param showModelsProvider The provider for showing the models.
+     */
     public registerModelTreeProvider(showModelsProvider: ShowModelsProvider): void {
         
         // Create the tree view
