@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Command } from './Command';
-import OllamaChatService from '../services/OllamaChatService';
-import ChatReplyHtmlBuilder, { PageModel } from '../util/ChatReplyHtmlBuilder';
+import ChatReplyHtmlBuilder, { PageModel } from '../services/ChatReplyHtmlBuilder';
 
 /**
  * Command to show the code in a webview panel.
@@ -54,16 +53,14 @@ export class ShowCodeCommand implements Command {
 		this._showWebViewPanel(codeLanguage, originalCode);
 		
 
-
-		// chat with Ollama
-		// const ollamaChat = new OllamaChatService(this._context);
-		// ollamaChat.chat(originalCode, codeLanguage)
-		// 	.then((chatResponse: any) => {
-		// 		let chatReply = JSON.stringify(chatResponse);
-		// 	});
 		
 	}
-	
+
+	/**
+	 * Show the initial webview panel.
+	 * @param codeLanguage The code language.
+	 * @param originalCode The original code
+	 */
 	private _showWebViewPanel(codeLanguage: string, originalCode: string): void {
 
 		const pageModel = this._getPageModel(codeLanguage, originalCode);

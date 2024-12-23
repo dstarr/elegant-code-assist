@@ -35,7 +35,20 @@
 
     <h2>Model reply:</h2>
 
-    {{chatReply}}
+    <div id="modelReply"></div>
+
+
+    <script lang="javascript">
+        window.addEventListener('message', event => {
+            const { command, data } = event.data;
+            if (command === 'updateChatReply') {
+                document.getElementById('modelReply').innerHTML = data;
+                hljs.highlightAll();
+            }
+          });    
+    </script>
+
+
 
 </body>
 

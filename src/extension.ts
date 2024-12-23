@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { CommandRegistrar } from './commands/CommandRegistrar';
-import { ShowModelsProvider } from './providers';
-import { ModelItem } from './providers/ShowModelsProvider';
+import { ProvideRegistrar, ShowModelsProvider } from './providers';
 
 /**
  * This method is called when your extension is activated
@@ -24,36 +23,11 @@ export async function activate(context: vscode.ExtensionContext) {
  */
 function initializeDataProviders(context: vscode.ExtensionContext): void {
 
+	const providerRegistrar = new ProvideRegistrar(context);
+	
+	// Initialize the data provider for the models tree view
 	const showModelsProvider = new ShowModelsProvider(context);
-	const treeView = vscode.window.createTreeView('ec_assist_modelsView', {
-		treeDataProvider: showModelsProvider,
-		canSelectMany: false
-	});
-
-	// Handle visibility changes
-	treeView.onDidChangeVisibility(event => {
-		if (event.visible) {
-			showModelsProvider.refresh();
-		}
-	});
-
-	treeView.onDidChangeSelection( (event) => {
-
-		if(event.selection.length < 0) {
-			return;
-		}
-		
-		console.debug('onDidChangeSelectionL ', event.selection[0].label);
-
-		const selectedItem = event.selection[0];
-		if (event.selection.length > 0) {
-            const selectedItem = event.selection[0] as ModelItem;
-            context.workspaceState.update('ec_assist.activeModel', selectedItem.name)
-				.then(() => {
-					showModelsProvider.updateIconPathForSelectedItem(selectedItem);
-				});
-        }
-	});
+	providerRegistrar.registerModelTreeProvider(showModelsProvider);
 }
 
 

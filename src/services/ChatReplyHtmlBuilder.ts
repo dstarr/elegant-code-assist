@@ -1,5 +1,5 @@
-import { ResourceReader } from "./ResourceReader";
 import * as vscode from 'vscode';
+import { ResourceReader } from "../util/ResourceReader";
 
 /**
  * Interface for passing the code to show in the webview panel.
@@ -11,6 +11,9 @@ export interface PageModel {
     chatReply?: string;
 }
 
+/**
+ * Class to build the HTML for the chat reply.
+ */
 export default class ChatReplyHtmlBuilder {
 
     private readonly _context: vscode.ExtensionContext;
@@ -23,6 +26,11 @@ export default class ChatReplyHtmlBuilder {
         this._context = context;
     }
 
+    /**
+     * Take in a pageModel and return the HTML to show in the webview panel.
+     * @param { PageModel } pageModel 
+     * @returns 
+     */
     public getWebViewHtml(pageModel: PageModel): string {
         
         // structure the chat reply in HTML

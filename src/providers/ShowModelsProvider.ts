@@ -95,6 +95,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
 
     /**
      * Fetches the models from the backend service and populates the models array.
+     * @returns {Promise<ModelItem[]>} The models array.
      */
     private async _fetchModels(): Promise<ModelItem[]> {
 
@@ -105,7 +106,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                 .then((modelsResponse: any) => {
                     // alpabetize the models array by name
                     models = modelsResponse.models.sort((a: any, b: any) => a.name.localeCompare(b.name));
-                    if (models.length > 0) {
+                    if (models.length <= 0) {
                         vscode.window.showErrorMessage('No models found. Please ensure Ollama is running.');
                     }
                 });
