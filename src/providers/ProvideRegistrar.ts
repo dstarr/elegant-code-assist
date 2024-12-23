@@ -22,6 +22,8 @@ export class ProvideRegistrar {
      * @param showModelsProvider The provider for showing the models.
      */
     public registerModelTreeProvider(showModelsProvider: ShowModelsProvider): void {
+
+        console.debug(`Provider ShowModelsProvider registered`);
         
         // Create the tree view
         const treeView = vscode.window.createTreeView('ec_assist_modelsView', {
