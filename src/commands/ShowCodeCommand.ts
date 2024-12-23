@@ -51,9 +51,6 @@ export class ShowCodeCommand implements Command {
 
 		// Show the code in the webview panel
 		this._showWebViewPanel(codeLanguage, originalCode);
-		
-
-		
 	}
 
 	/**
@@ -91,16 +88,11 @@ export class ShowCodeCommand implements Command {
 	 */
 	private _getPageModel(codeLanguage: string, originalCode: string): PageModel {
 
-		let pageModel: PageModel = {
-			model: this._context.workspaceState.get('ec-code-assist.activeModel') || '',
-			originalCode: 'No active document.',
-			language: ''
+		return {
+			model: this._context.workspaceState.get<string>('ec-code-assist.activeModel') || '',
+			originalCode: originalCode,
+			language: codeLanguage
 		};
-
-		pageModel.language = codeLanguage;
-		pageModel.originalCode = originalCode;
-
-		return pageModel;
 	}
 
 	/**

@@ -4,7 +4,7 @@ import { ModelItem, ShowModelsProvider } from "./ShowModelsProvider";
 /**
  * Class for registering the providers for the extension.
  */
-export class ProvideRegistrar {
+export class ProviderRegistrar {
 
     private readonly _context: vscode.ExtensionContext;
 

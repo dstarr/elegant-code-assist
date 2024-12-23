@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CommandRegistrar } from './commands/CommandRegistrar';
-import { ProvideRegistrar, ShowModelsProvider } from './providers';
+import { ProviderRegistrar, ShowModelsProvider } from './providers';
 
 /**
  * This method is called when your extension is activated
@@ -24,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
 function initializeDataProviders(context: vscode.ExtensionContext): void {
 
 	// Initialize the provider registrar to be used for registering the data providers
-	const providerRegistrar = new ProvideRegistrar(context);
+	const providerRegistrar = new ProviderRegistrar(context);
 	
 	// Initialize the data provider for the models tree view
 	const showModelsProvider = new ShowModelsProvider(context);

@@ -1,3 +1,3 @@
 export { ShowModelsProvider } from "./ShowModelsProvider";
-export { ProvideRegistrar } from "./ProvideRegistrar";
+export { ProviderRegistrar } from "./ProviderRegistrar";
 
