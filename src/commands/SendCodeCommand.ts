@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { Command } from './Command';
-import ChatReplyHtmlBuilder, { PageModel } from '../services/ChatReplyHtmlBuilder';
+import HtmlBuilder, { PageModel } from '../services/HtmlBuilder';
 
 /**
  * Command to show the code in a webview panel.
@@ -52,10 +52,14 @@ export class SendCodeCommand implements Command {
 		// Show the code in the webview panel
 		this._showWebViewPanel(codeLanguage, originalCode);
 
+		// get the response from ollama
+		
+
+
 		// send the webpanel a message
 		this._panel?.webview.postMessage({
 			command: 'ec_assist_webview_update',
-			text: "GIT IT",
+			text: "GOT IT",
 		});
 	}
 
@@ -68,9 +72,10 @@ export class SendCodeCommand implements Command {
 
 		const pageModel = this._getPageModel(codeLanguage, originalCode);
 
-		const htmlBuilder: ChatReplyHtmlBuilder = new ChatReplyHtmlBuilder(this._context);
+		const htmlBuilder: HtmlBuilder = new HtmlBuilder(this._context);
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 		
+		// If the panel already exists, reveal it. Otherwise, create a new panel.
 		if (this._panel) {
 			this._panel.webview.html = htmlBuilder.getWebViewHtml(pageModel);
 			this._panel.reveal(column);
@@ -83,7 +88,8 @@ export class SendCodeCommand implements Command {
 			);
 
 			this._panel.webview.html = htmlBuilder.getWebViewHtml(pageModel);
-
+			
+			// Handle the panel dispose event
 			this._panel.onDidDispose(() => {
 				this._panel = undefined;
 			});
