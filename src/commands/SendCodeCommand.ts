@@ -67,6 +67,7 @@ export class SendCodeCommand implements Command {
 	private _showWebViewPanel(codeLanguage: string, originalCode: string): void {
 
 		const pageModel = this._getPageModel(codeLanguage, originalCode);
+
 		const htmlBuilder: ChatReplyHtmlBuilder = new ChatReplyHtmlBuilder(this._context);
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 		
@@ -95,7 +96,7 @@ export class SendCodeCommand implements Command {
 	private _getPageModel(codeLanguage: string, originalCode: string): PageModel {
 
 		return {
-			model: this._context.workspaceState.get<string>('ec-code-assist.activeModel') || '',
+			model: this._context.workspaceState.get<string>('ec_assist.activeModel') || '',
 			originalCode: originalCode,
 			language: codeLanguage
 		};
