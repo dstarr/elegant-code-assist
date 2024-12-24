@@ -37,7 +37,7 @@ export class OllamaChatReply {
  */
 export default class OllamaChatService {
 
-    constructor(private _context: vscode.ExtensionContext) {}
+    constructor(private _context: vscode.ExtensionContext) { }
 
     /**
      * Talk to the Ollama chat protocol 
@@ -48,40 +48,40 @@ export default class OllamaChatService {
     public async chat(originalCode: string, codeLanguage: string): Promise<OllamaChatReply> {
 
         try {
-                // Get the chat prompt
-                const chatRequest: ChatRequest & { stream: false } = this._getChatPrompt(originalCode, codeLanguage);
-                
-				// Send a request to the chat API response
-                const response = await ollama.chat(chatRequest);
-                const reply = response.message.content;
+            // Get the chat prompt
+            const chatRequest: ChatRequest & { stream: false } = this._getChatPrompt(originalCode, codeLanguage);
 
-                return OllamaChatReply.fromJson(reply);
+            // Send a request to the chat API response
+            const response = await ollama.chat(chatRequest);
+            const reply = response.message.content;
 
-            } catch (error) {
-                console.error(error);
-                throw error;
-            }
-	}
+            return OllamaChatReply.fromJson(reply);
 
-        /**
-         * Get the chat prompt for ollama.
-         * @param originalCode The original code.
-         * @param codeLanguage The language of the original code.
-         * @returns The chat request with the original code and language.
-         */
-        private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: false; } {
-            
-            const modelName: string = this._context.workspaceState.get('ec_assist.activeModel') || '';
-            const promptBuilder: PromptBuilder = new PromptBuilder();		
-            const prompt: ChatRequest = promptBuilder.generatePrompt(
-                {
-                    context: this._context, 
-                    modelName: modelName, 
-                    originalCode: originalCode, 
-                    codeLanguage: codeLanguage
-                }
-            );
-    
-            return prompt as ChatRequest & { stream: false; };
+        } catch (error) {
+            console.error(error);
+            throw error;
         }
+    }
+
+    /**
+     * Get the chat prompt for ollama.
+     * @param originalCode The original code.
+     * @param codeLanguage The language of the original code.
+     * @returns The chat request with the original code and language.
+     */
+    private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: false; } {
+
+        const modelName: string = this._context.workspaceState.get('ec_assist.activeModel') || '';
+        const promptBuilder: PromptBuilder = new PromptBuilder();
+        const prompt: ChatRequest = promptBuilder.generatePrompt(
+            {
+                context: this._context,
+                modelName: modelName,
+                originalCode: originalCode,
+                codeLanguage: codeLanguage
+            }
+        );
+
+        return prompt as ChatRequest & { stream: false; };
+    }
 }

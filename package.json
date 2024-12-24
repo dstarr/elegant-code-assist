@@ -20,7 +20,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "ec_assist_helloWorld",
+        "command": "ec_assist_ollamaChat",
         "title": "Hello World",
         "category": "EC"
       },

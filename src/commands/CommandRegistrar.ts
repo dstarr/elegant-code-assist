@@ -1,7 +1,7 @@
 // a class that registers all the commands with the VS Code context
 import * as vscode from 'vscode';
 import { Command, 
-         HelloWorldCommand, 
+         OllamaChatCommand, 
          SendCodeCommand, 
          ShowModelsCommand, 
          ShowWorkspaceStateCommand 
@@ -23,7 +23,7 @@ export class CommandRegistrar {
         let commands: { [key: string]: Command } = {};
 
         // Hello World command
-        command = new HelloWorldCommand();
+        command = new OllamaChatCommand();
         commands[command.name] = command;
 
         // Show workspace state command

@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import { Command } from './Command';
 
-export class HelloWorldCommand implements Command {
+export class OllamaChatCommand implements Command {
     
-    public readonly name: string  = 'ec_assist_helloWorld';
+    public readonly name: string  = 'ec_assist_ollamaChat';
 
     constructor() {
         console.debug(`Command ${this.name} created`);
@@ -11,6 +11,6 @@ export class HelloWorldCommand implements Command {
 
     public execute(): void {
         console.debug(`Command ${this.name} executed`);
-        vscode.window.showInformationMessage('Hello World from EC Code Assist command!');
+        vscode.window.showInformationMessage('EC Code Assist command!', 'ec_assist_ollamaChat');
     }
 }
