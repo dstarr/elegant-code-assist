@@ -35,18 +35,22 @@
 
     <h2>Model reply:</h2>
 
-    <div id="modelReply"></div>
+    <div id="ec_assist_webview_chatReply"></div>
 
-
-    <script lang="javascript">
+    <script>
+        // Listen for messages from the VS Code extension
         window.addEventListener('message', event => {
-            const { command, data } = event.data;
-            if (command === 'updateChatReply') {
-                document.getElementById('modelReply').innerHTML = data;
-                hljs.highlightAll();
+            // The JSON data sent by the extension
+            const message = event.data;
+    
+            // Handle the message based on its command
+            if (message.command === 'ec_assist_webview_update') {
+                // Update the Webview DOM with the received message
+                document.getElementById('ec_assist_webview_chatReply').textContent = message.text;
             }
-          });    
+        });
     </script>
+    
 
 
 

@@ -51,6 +51,12 @@ export class SendCodeCommand implements Command {
 
 		// Show the code in the webview panel
 		this._showWebViewPanel(codeLanguage, originalCode);
+
+		// send the webpanel a message
+		this._panel?.webview.postMessage({
+			command: 'ec_assist_webview_update',
+			text: "GIT IT",
+		});
 	}
 
 	/**
