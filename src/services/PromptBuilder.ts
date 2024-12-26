@@ -45,7 +45,7 @@ export class PromptBuilder {
  * @param originalCode {string} The user's actual code.
  * @param codeLanguage {string} The language of the original code.
  */
-interface GeneratePromptArgs {
+export interface GeneratePromptArgs {
     context: vscode.ExtensionContext;
     modelName: string;
     originalCode: string;

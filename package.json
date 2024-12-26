@@ -15,7 +15,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onWebviewPanel:catCoding"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -54,6 +56,9 @@
         {
           "command": "ec_assist_sendCode",
           "when": "editorTextFocus"
+        },
+        {
+          "command": "ec_assist_postToWebview"
         }
       ]
     }

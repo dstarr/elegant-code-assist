@@ -71,7 +71,7 @@ export default class OllamaChatService {
      */
     private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: false; } {
 
-        const modelName: string = this._context.workspaceState.get('ec_assist.activeModel') || '';
+        const modelName: string = this._context.workspaceState.get<string>('ec_assist.activeModel') || '';
         const promptBuilder: PromptBuilder = new PromptBuilder();
         const prompt: ChatRequest = promptBuilder.generatePrompt(
             {

@@ -32,7 +32,7 @@ export class CommandRegistrar {
         // Show Models command
         command = new ShowModelsCommand(context);
         commands[command.name] = command;
-        
+
         // Register all commands with the context
         for (const commandName in commands) {
             const command = commands[commandName];

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Command } from './Command';
 import HtmlBuilder, { PageModel } from '../services/HtmlBuilder';
+import OllamaChatService, { OllamaChatReply } from '../services/OllamaChatService';
 
 /**
  * Command to show the code in a webview panel.
@@ -8,13 +9,9 @@ import HtmlBuilder, { PageModel } from '../services/HtmlBuilder';
 export class SendCodeCommand implements Command {
 
 	private readonly _context: vscode.ExtensionContext;
-	private readonly _panelTitle: string = 'Elegant Code Assist';
-	private readonly _panelOptions: vscode.WebviewOptions = {
-		enableScripts: true,
-	};
-	
+
 	private _panel: vscode.WebviewPanel | undefined;
-	
+
 	/**
 	 * This is the command identifier that the command is registered with.
 	 */
@@ -25,7 +22,7 @@ export class SendCodeCommand implements Command {
 	 * @param context The extension context.
 	 */
 	constructor(context: vscode.ExtensionContext) {
-        console.debug(`Command ${this.name} created`);
+		console.debug(`Command ${this.name} created`);
 		this._context = context;
 	}
 
@@ -38,8 +35,8 @@ export class SendCodeCommand implements Command {
 	*/
 	public execute(): void {
 
-        console.debug(`Command ${this.name} executed`);
-		
+		console.debug(`Command ${this.name} executed`);
+
 		const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
 		if (!editor) {
@@ -52,18 +49,40 @@ export class SendCodeCommand implements Command {
 		// Show the code in the webview panel
 		this._showWebViewPanel(codeLanguage, originalCode);
 
-		// get the response from ollama
-		
-
-
 		// send the webpanel a message
+		console.log("Posting to webview 1:", this._panel);
 		this._panel?.webview.postMessage({
 			command: 'ec_assist_webview_update',
-			text: "GOT IT",
+			text: "GOT IT 1"
+		}).then(() => {
+			console.log("Posted to webview 1");
 		});
+
+		// get the response from ollama
+		const ollamaChatService = new OllamaChatService(this._context);
+		ollamaChatService.chat(originalCode, codeLanguage)
+			.then((reply: OllamaChatReply) => {
+				console.log("Posting Ollama response to webview");
+
+				if(!this._panel) {
+					console.debug("No panel to post to");
+				}
+
+				// send the webpanel a message
+				this._panel?.webview.postMessage({
+					command: '	',
+					overview: reply.overview,
+					text: "GOT IT",
+					suggestions: reply.suggestions
+				});
+
+			})
+			.catch((error: any) => {
+				console.error(error);
+			});
 	}
 
-	/**
+	/**	
 	 * Show the initial webview panel.
 	 * @param codeLanguage The code language.
 	 * @param originalCode The original code
@@ -74,21 +93,39 @@ export class SendCodeCommand implements Command {
 
 		const htmlBuilder: HtmlBuilder = new HtmlBuilder(this._context);
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
-		
+
 		// If the panel already exists, reveal it. Otherwise, create a new panel.
 		if (this._panel) {
 			this._panel.webview.html = htmlBuilder.getWebViewHtml(pageModel);
+			
+			
+			this._panel.webview.onDidReceiveMessage(
+				message => {
+					console.debug("Received message from webview", message);
+				},
+				undefined,
+				this._context.subscriptions
+			);
+
 			this._panel.reveal(column);
+
 		} else {
+
+			const panelTitle: string = 'Elegant Code Assist';
+		
 			this._panel = vscode.window.createWebviewPanel(
-				this.name,
-				this._panelTitle,
+				'ecAssist',
+				panelTitle,
 				column || vscode.ViewColumn.One,
-				this._panelOptions
+				{
+					enableScripts: true,
+					enableForms: true,
+					retainContextWhenHidden: true
+				}
 			);
 
 			this._panel.webview.html = htmlBuilder.getWebViewHtml(pageModel);
-			
+
 			// Handle the panel dispose event
 			this._panel.onDidDispose(() => {
 				this._panel = undefined;
