@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Command } from './Command';
 import HtmlBuilder, { PageModel } from '../services/HtmlBuilder';
 import OllamaChatService, { OllamaChatReply } from '../services/OllamaChatService';
+import { COMMANDS, STATE_MANAGEMENT } from '../util/Constants';
 
 /**
  * Command to show the code in a webview panel.
@@ -15,7 +16,7 @@ export class SendCodeCommand implements Command {
 	/**
 	 * This is the command identifier that the command is registered with.
 	 */
-	public name: string = 'ec_assist_sendCode';
+	public name: string = COMMANDS.SEND_CODE;
 
 	/**
 	 * Constructor.
@@ -52,7 +53,7 @@ export class SendCodeCommand implements Command {
 		// send the webpanel a message
 		console.log("Posting to webview 1:", this._panel);
 		this._panel?.webview.postMessage({
-			command: 'ec_assist_webview_update',
+			command: COMMANDS.SEND_CODE_WEBVIEW_UPDATE,
 			text: "GOT IT 1"
 		}).then(() => {
 			console.log("Posted to webview 1");
@@ -111,11 +112,9 @@ export class SendCodeCommand implements Command {
 
 		} else {
 
-			const panelTitle: string = 'Elegant Code Assist';
-		
 			this._panel = vscode.window.createWebviewPanel(
 				'ecAssist',
-				panelTitle,
+				'Elegant Code Assist',
 				column || vscode.ViewColumn.One,
 				{
 					enableScripts: true,
@@ -128,7 +127,7 @@ export class SendCodeCommand implements Command {
 
 			// Handle the panel dispose event
 			this._panel.onDidDispose(() => {
-				this._panel = undefined;
+				// this._panel = undefined;
 			});
 		}
 	}
@@ -139,7 +138,7 @@ export class SendCodeCommand implements Command {
 	private _getPageModel(codeLanguage: string, originalCode: string): PageModel {
 
 		return {
-			model: this._context.workspaceState.get<string>('ec_assist.activeModel') || '',
+			model: this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL) || '',
 			originalCode: originalCode,
 			language: codeLanguage
 		};

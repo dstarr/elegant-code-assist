@@ -22,22 +22,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "ec_assist_ollamaChat",
-        "title": "Hello World",
-        "category": "EC"
-      },
-      {
-        "command": "ec_assist_sendCode",
+        "command": "ecassist.sendCode",
         "title": "Send to Ollama",
         "category": "EC"
       },
       {
-        "command": "ec_assist_showModels",
-        "title": "Show Available Models",
-        "category": "EC"
-      },
-      {
-        "command": "ec_assist_showWorkspaceState",
+        "command": "ecassist.showWorkspaceState",
         "title": "Show Workspace State",
         "category": "EC"
       }
@@ -45,7 +35,7 @@
     "views": {
       "explorer": [
         {
-          "id": "ec_assist_modelsView",
+          "id": "ecassist.modelsView",
           "name": "Ollama Models"
         }
       ]
@@ -54,11 +44,11 @@
       "view/item/context": [],
       "editor/context": [
         {
-          "command": "ec_assist_sendCode",
+          "command": "ecassist.sendCode",
           "when": "editorTextFocus"
         },
         {
-          "command": "ec_assist_postToWebview"
+          "command": "ecassist.sendCodeWebviewUpdate"
         }
       ]
     }

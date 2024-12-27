@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import ollama from 'ollama';
+import { STATE_MANAGEMENT } from '../util/Constants';
 
 /**
  * Represents a provider for the tree view that shows the models.
@@ -31,13 +32,12 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
       */
     public getTreeItem(element: ModelItem): vscode.TreeItem {
 
-        const storedModel: string = this._context.workspaceState.get<string>('ec_assist.activeModel') || '';
+        const storedModel: string = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL) || '';
 
         element.label = element.name;
         if (element.name === storedModel) {
             element.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
         }
-
 
         return element;
     }
@@ -54,7 +54,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
                 .then(models => {
                     // put a chat icon next to the active model
                     models.forEach(model => {
-                        const storedModel = this._context.workspaceState.get<string>('ec_assist.activeModel');
+                        const storedModel = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL);
                         if (storedModel === model.name) {
                             model.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
                         } else if (storedModel === undefined) {
@@ -80,7 +80,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * @param {ModelItem} selectedItem The selected item.
      */
     public updateIconPathForSelectedItem(selectedItem: ModelItem): void {
-        const storedModel: string = this._context.workspaceState.get<string>('ec_assist.activeModel') || '';
+        const storedModel: string = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL) || '';
 
         // Update the icon path for the selected item
         if (selectedItem.name === storedModel) {

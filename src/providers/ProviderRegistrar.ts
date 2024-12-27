@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { ModelItem, ShowModelsProvider } from "./ShowModelsProvider";
+import { VIEWS } from '../util/Constants';
 
 /**
  * Class for registering the providers for the extension.
@@ -26,7 +27,7 @@ export class ProviderRegistrar {
         console.debug(`Provider ShowModelsProvider registered`);
         
         // Create the tree view
-        const treeView = vscode.window.createTreeView('ec_assist_modelsView', {
+        const treeView = vscode.window.createTreeView(VIEWS.MODELS_TREE, {
             treeDataProvider: showModelsProvider,
             canSelectMany: false
         });
@@ -49,7 +50,7 @@ export class ProviderRegistrar {
 
             if (event.selection.length > 0) {
                 const selectedItem = event.selection[0] as ModelItem;
-                this._context.workspaceState.update('ec_assist.activeModel', selectedItem.name)
+                this._context.workspaceState.update(VIEWS.MODELS_TREE, selectedItem.name)
                     .then(() => {
                         showModelsProvider.updateIconPathForSelectedItem(selectedItem);
                     });

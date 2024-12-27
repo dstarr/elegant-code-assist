@@ -2,7 +2,6 @@
 import * as vscode from 'vscode';
 import { Command, 
          SendCodeCommand, 
-         ShowModelsCommand, 
          ShowWorkspaceStateCommand 
        } from './index';
 
@@ -29,10 +28,6 @@ export class CommandRegistrar {
         command = new SendCodeCommand(context);
         commands[command.name] = command;
         
-        // Show Models command
-        command = new ShowModelsCommand(context);
-        commands[command.name] = command;
-
         // Register all commands with the context
         for (const commandName in commands) {
             const command = commands[commandName];

@@ -1,9 +1,10 @@
+import { COMMANDS } from "../util/Constants";
 import { Command } from "./Command";
 import * as vscode from 'vscode';
 
 export class ShowWorkspaceStateCommand implements Command {
     
-    public readonly name: string = 'ec_assist_showWorkspaceState';
+    public readonly name: string = COMMANDS.SHOW_WORKSPACE_STATE;
     private readonly _context: vscode.ExtensionContext;
 
     constructor(context: vscode.ExtensionContext) {
