@@ -94,6 +94,8 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<vscode.TreeIt
                 .then((modelsResponse: any) => {
                     // alpabetize the models array by name
                     models = modelsResponse.models.sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+                    // signal if no model is found
                     if (models.length <= 0) {
                         vscode.window.showErrorMessage('No models found.');
                     }
