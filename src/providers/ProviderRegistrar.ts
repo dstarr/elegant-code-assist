@@ -43,8 +43,6 @@ export class ProviderRegistrar {
         // Handle selection changes
         treeView.onDidChangeSelection(async (event) => {
 
-            console.debug(`Selection changed: ${event.selection[0]?.label}`);
-
             if (event.selection.length <= 0) {
                 return;
             }
@@ -54,7 +52,6 @@ export class ProviderRegistrar {
             Promise.resolve(
                 this._context.workspaceState.update(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL, selectedItem.label)
                     .then(() => {
-                        console.debug(`Workspace state updated: ${selectedItem.label}`);
                         showModelsProvider.refresh();
                 })
             );

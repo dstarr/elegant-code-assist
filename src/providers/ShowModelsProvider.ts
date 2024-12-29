@@ -31,24 +31,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<vscode.TreeIt
       * @returns {ModelItem} The tree item for the given model item.
       */
     public getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
-
         return element;
-        
-        // console.debug('Getting single treeview item:', element.label);
-
-        // if (element === undefined) {
-        //     return new vscode.TreeItem('Invalid Item');
-        // }
-        
-        // const storedModel: string = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL) || '';
-
-        // if (element.label === storedModel) {
-        //     element.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-        // } else {
-        //     element.iconPath = undefined; // or set to a default icon
-        // }
-
-        // return element;
     }
 
     /**
@@ -57,8 +40,6 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<vscode.TreeIt
      * @returns 
      */
     async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[]> {
-
-        console.debug('Getting children for the tree view');
 
         let storedModel = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL);
         let treeItems: vscode.TreeItem[] = [];
@@ -71,20 +52,17 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<vscode.TreeIt
                         await this._context.workspaceState.update(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL, models[0].name)
                             .then(() => {
                                 storedModel = models[0].name;
-                                console.debug('Active model saved as:', storedModel);
                             });
                     }
                     
                     // put a chat icon next to the active model
-                    console.debug('Active model:', storedModel);
+                    vscode.window.showInformationMessage(`Active model: ${storedModel}` );
+
                     models.forEach(model => {
-
                         let treeViewItem = new vscode.TreeItem(model.name);
-
                         if (treeViewItem.label === storedModel) {
                             treeViewItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
                         } 
-
                         treeItems.push(treeViewItem);
 
                     });
@@ -99,7 +77,6 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<vscode.TreeIt
      * Refreshes the tree view.
      */
     public refresh(): void {
-        console.debug('Refreshing the models tree view');
         this._onDidChangeTreeData.fire();
     }
 
