@@ -31,10 +31,10 @@ function initializeDataProviders(context: vscode.ExtensionContext): void {
 	providerRegistrar.registerModelTreeProvider(showModelsProvider);
 }
 
-
-
-// This method is called when your extension is deactivated
-export function deactivate() { }
+/** 
+ * Called when the extension is deactivated
+ */
+export function deactivate(): void { }
 
 
 
