@@ -6,16 +6,16 @@ import { STATE_MANAGEMENT } from '../util/Constants';
  * Represents a provider for the tree view that shows the models.
  * This provider fetches the models from the backend service and displays them in the tree view.
  */
-export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
+export class ShowModelsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     private readonly _context: vscode.ExtensionContext;
 
-    private _onDidChangeTreeData: vscode.EventEmitter<ModelItem | ModelItem[] | undefined | null | void> = new vscode.EventEmitter<ModelItem | ModelItem[] | undefined | null | void>();
+    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | vscode.TreeItem[] | undefined | null | void> = new vscode.EventEmitter<vscode.TreeItem | vscode.TreeItem[] | undefined | null | void>();
 
     /**
      * An event that is fired when the tree data changes.
      */
-    public readonly onDidChangeTreeData: vscode.Event<ModelItem | ModelItem[] | undefined | null | void> = this._onDidChangeTreeData.event;
+    public readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | vscode.TreeItem[] | undefined | null | void> = this._onDidChangeTreeData.event;
 
     /**
      * Initializes a new instance of the ShowModelsProvider class.
@@ -30,16 +30,25 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
       * @param {ModelItem} element The model item to be displayed.
       * @returns {ModelItem} The tree item for the given model item.
       */
-    public getTreeItem(element: ModelItem): vscode.TreeItem {
-
-        const storedModel: string = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL) || '';
-
-        element.label = element.name;
-        if (element.name === storedModel) {
-            element.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-        }
+    public getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
 
         return element;
+        
+        // console.debug('Getting single treeview item:', element.label);
+
+        // if (element === undefined) {
+        //     return new vscode.TreeItem('Invalid Item');
+        // }
+        
+        // const storedModel: string = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL) || '';
+
+        // if (element.label === storedModel) {
+        //     element.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+        // } else {
+        //     element.iconPath = undefined; // or set to a default icon
+        // }
+
+        // return element;
     }
 
     /**
@@ -47,21 +56,39 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * @param element When element is undefined, fetche the models
      * @returns 
      */
-    async getChildren(element?: ModelItem): Promise<ModelItem[]> {
+    async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[]> {
+
+        console.debug('Getting children for the tree view');
+
+        let storedModel = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL);
+        let treeItems: vscode.TreeItem[] = [];
 
         return new Promise((resolve, reject) => {
             this._fetchModels()
-                .then(models => {
+                .then(async models => {
+                    
+                    if(storedModel === undefined && models.length > 0) {
+                        await this._context.workspaceState.update(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL, models[0].name)
+                            .then(() => {
+                                storedModel = models[0].name;
+                                console.debug('Active model saved as:', storedModel);
+                            });
+                    }
+                    
                     // put a chat icon next to the active model
+                    console.debug('Active model:', storedModel);
                     models.forEach(model => {
-                        const storedModel = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL);
-                        if (storedModel === model.name) {
-                            model.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                        } else if (storedModel === undefined) {
-                            models[0].iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-                        }
+
+                        let treeViewItem = new vscode.TreeItem(model.name);
+
+                        if (treeViewItem.label === storedModel) {
+                            treeViewItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
+                        } 
+
+                        treeItems.push(treeViewItem);
+
                     });
-                    resolve(models);
+                    resolve(treeItems);
                 })
                 .catch(err => reject(err));
         });
@@ -72,25 +99,8 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
      * Refreshes the tree view.
      */
     public refresh(): void {
+        console.debug('Refreshing the models tree view');
         this._onDidChangeTreeData.fire();
-    }
-
-    /**
-     * Updates the icon path for the selected item.
-     * @param {ModelItem} selectedItem The selected item.
-     */
-    public updateIconPathForSelectedItem(selectedItem: ModelItem): void {
-        const storedModel: string = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL) || '';
-
-        // Update the icon path for the selected item
-        if (selectedItem.name === storedModel) {
-            selectedItem.iconPath = new vscode.ThemeIcon('chat-editor-label-icon');
-        } else {
-            selectedItem.iconPath = undefined; // or set to a default icon
-        }
-
-        // Refresh the tree view
-        this.refresh();
     }
 
     /**
@@ -102,13 +112,15 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
         let models: ModelItem[] = [];
 
         try {
+
             await ollama.list()
                 .then((modelsResponse: any) => {
                     // alpabetize the models array by name
                     models = modelsResponse.models.sort((a: any, b: any) => a.name.localeCompare(b.name));
                     if (models.length <= 0) {
-                        vscode.window.showErrorMessage('No models found. Please ensure Ollama is running.');
+                        vscode.window.showErrorMessage('No models found.');
                     }
+
                 });
 
         } catch (error) {
@@ -122,16 +134,13 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<ModelItem> {
 /**
  * Represents a model item, a node in the tree view.
  */
-export class ModelItem extends vscode.TreeItem {
-
-    name: string;
+class ModelItem {
 
     /**
      * Initializes a new instance of the ModelItem class.
      * @param label The label of the model item.
      */
-    constructor(label: string) {
-        super(label, vscode.TreeItemCollapsibleState.None);
-        this.name = label;
+    constructor(public name: string) {
+        
     }
 }

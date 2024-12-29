@@ -1,6 +1,6 @@
+import { ShowModelsProvider } from "./ShowModelsProvider";
 import * as vscode from 'vscode';
-import { ModelItem, ShowModelsProvider } from "./ShowModelsProvider";
-import { VIEWS } from '../util/Constants';
+import { STATE_MANAGEMENT, VIEWS } from '../util/Constants';
 
 /**
  * Class for registering the providers for the extension.
@@ -24,13 +24,14 @@ export class ProviderRegistrar {
      */
     public registerModelTreeProvider(showModelsProvider: ShowModelsProvider): void {
 
-        console.debug(`Provider ShowModelsProvider registered`);
-        
+        console.debug(`Provider ShowModelsProvider registering`);
+
         // Create the tree view
         const treeView = vscode.window.createTreeView(VIEWS.MODELS_TREE, {
             treeDataProvider: showModelsProvider,
             canSelectMany: false
         });
+
 
         // refreh the tree view when it becomes visible
         treeView.onDidChangeVisibility(event => {
@@ -40,22 +41,27 @@ export class ProviderRegistrar {
         });
 
         // Handle selection changes
-        treeView.onDidChangeSelection((event) => {
+        treeView.onDidChangeSelection(async (event) => {
 
-            if (event.selection.length < 0) {
+            console.debug(`Selection changed: ${event.selection[0]?.label}`);
+
+            if (event.selection.length <= 0) {
                 return;
             }
 
             const selectedItem = event.selection[0];
 
-            if (event.selection.length > 0) {
-                const selectedItem = event.selection[0] as ModelItem;
-                this._context.workspaceState.update(VIEWS.MODELS_TREE, selectedItem.name)
+            Promise.resolve(
+                this._context.workspaceState.update(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL, selectedItem.label)
                     .then(() => {
-                        showModelsProvider.updateIconPathForSelectedItem(selectedItem);
-                    });
-            }
+                        console.debug(`Workspace state updated: ${selectedItem.label}`);
+                        showModelsProvider.refresh();
+                })
+            );
+
         });
+
+        this._context.subscriptions.push(treeView);
     }
 
 
