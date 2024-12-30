@@ -1,4 +1,4 @@
-import { CodeWebViewProvider, ShowModelsProvider } from "./index";
+import { ShowModelsProvider } from "./index";
 import * as vscode from 'vscode';
 import { STATE_MANAGEMENT, VIEWS } from '../util/Constants';
 
