@@ -27,7 +27,7 @@ export class ProviderRegistrar {
         console.debug(`Provider ShowModelsProvider registering`);
 
         // Create the tree view
-        const treeView = vscode.window.createTreeView(VIEWS.MODELS_TREE, {
+        const treeView = vscode.window.createTreeView(VIEWS.MODELS_TREE_VIEW, {
             treeDataProvider: showModelsProvider,
             canSelectMany: false
         });

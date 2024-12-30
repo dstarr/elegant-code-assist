@@ -12,7 +12,8 @@ export const COMMANDS = {
  * Constants for the extension views
  */
 export const VIEWS = {
-    MODELS_TREE: 'ecassist.modelsView',
+    MODELS_TREE_VIEW: 'ecassist.modelsView',
+    CODE_VIEW: 'ecassist.codeView',
 };
 
 /**

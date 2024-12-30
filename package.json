@@ -41,7 +41,13 @@
       "explorer": [
         {
           "id": "ecassist.modelsView",
-          "name": "Ollama Models"
+          "name": "Ollama Models",
+          "type": "tree"
+        },
+        {
+          "id": "ecassist.codeView",
+          "name": "Elegant Code Assist",
+          "type": "webview"
         }
       ]
     },
