@@ -39,8 +39,47 @@ export class SendCodeCommand implements Command {
 			vscode.window.registerWebviewViewProvider(CodeWebViewProvider.viewType, codeWebViewProvider)
 		);
 		
-		codeWebViewProvider.show();
+		// get the active text editor
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showErrorMessage("No active document.");
+			return;
+		}
+
+		// get the original code from the active document
+		const { codeLanguage, originalCode } = this._getOriginalCode(editor);
+
+		codeWebViewProvider.show(originalCode, codeLanguage);
 	}
+
+	/**
+     * Get the original code from the active document.
+     * Values can be:
+     * - The selected text if any.
+     * - The entire document text if no text is selected.
+     * @param editor The active text editor.
+     */
+    private _getOriginalCode(editor: vscode.TextEditor): { codeLanguage: string; originalCode: string; } {
+
+        let code: string = "No active document.";
+        let codeLanguage: string = '';
+
+        const document = editor.document;
+        if (!document) {
+            return { codeLanguage, originalCode: code };
+        }
+
+        const selection = editor.selection;
+        codeLanguage = editor.document.languageId;
+
+        // Get the selected text if any, otherwise, get the entire document text
+        if (selection.isEmpty) {
+            code = document.getText();
+        } else {
+            code = document.getText(selection);
+        }
+        return { codeLanguage, originalCode: code };
+    }
 
 }
 

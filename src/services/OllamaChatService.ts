@@ -46,11 +46,11 @@ export default class OllamaChatService {
      * @param codeLanguage 
      * @returns { Promise<OllamaChatReply> } The chat reply from Ollama.
      */
-    public async chat(originalCode: string, codeLanguage: string): Promise<OllamaChatReply> {
+    public async chat(codeLanguage: string, originalCode: string): Promise<OllamaChatReply> {
 
         try {
             // Get the chat prompt
-            const chatRequest: ChatRequest & { stream: false } = this._getChatPrompt(originalCode, codeLanguage);
+            const chatRequest: ChatRequest & { stream: false } = this._getChatPrompt(codeLanguage, originalCode);
 
             // Send a request to the chat API response
             const response = await ollama.chat(chatRequest);
@@ -70,7 +70,7 @@ export default class OllamaChatService {
      * @param codeLanguage The language of the original code.
      * @returns The chat request with the original code and language.
      */
-    private _getChatPrompt(originalCode: string, codeLanguage: string): ChatRequest & { stream: false; } {
+    private _getChatPrompt(codeLanguage: string, originalCode: string): ChatRequest & { stream: false; } {
 
         const modelName: string = this._context.workspaceState.get<string>(STATE_MANAGEMENT.WORKSPACE_STATE_ACTIVE_MODEL) || '';
         const promptBuilder: PromptBuilder = new PromptBuilder();

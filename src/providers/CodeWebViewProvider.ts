@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { STATE_MANAGEMENT, VIEWS } from '../util/Constants';
 import HtmlBuilder, { PageModel } from '../services/HtmlBuilder';
+import OllamaChatService, { OllamaChatReply } from '../services/OllamaChatService';
 
 export class CodeWebViewProvider implements vscode.WebviewViewProvider {
     
@@ -13,17 +14,18 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
         this._context = context;
     }
     
-    public resolveWebviewView( 
-                            webviewView: vscode.WebviewView, 
-                            context: vscode.WebviewViewResolveContext, 
-                            token: vscode.CancellationToken): Thenable<void> | void {
+    public resolveWebviewView(
+                    webviewView: vscode.WebviewView, 
+                    context: vscode.WebviewViewResolveContext, 
+                    token: vscode.CancellationToken): Thenable<void> | void{
+                        
         console.debug("Resolving webviewView");
     }
 
-    public show() {
+    public show(codeLanguage: string, originalCode: string) {
         
         if (this._panel) {
-            this._panel.webview.html = this._getOpeningHtml();
+            this._panel.webview.html = this._getOpeningHtml(codeLanguage, originalCode);
             this._panel.reveal();
         } else {
             this._panel = vscode.window.createWebviewPanel(
@@ -36,30 +38,56 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
                 }
             );
 
-            this._panel.webview.html = this._getOpeningHtml();
+            this._panel.webview.html = this._getOpeningHtml(originalCode, codeLanguage);
 
             this._panel.onDidDispose(() => {
                 this._panel = undefined;
             });
         }
+
+        // this.addOllamaResponse(originalCode, codeLanguage);
     }
 
-    public addOllamaResponse(): void {
-        if (this._panel) {
-			this._panel.webview.postMessage({ type: 'codeAiResponse' });
-		}
+    public addOllamaResponse(codeLanguage: string, originalCode: string): void {
+        
+        console.debug("Getting Ollama response");
+
+        // get the response from ollama
+		const ollamaChatService = new OllamaChatService(this._context);
+		
+        ollamaChatService.chat(originalCode, codeLanguage)
+			.then((reply: OllamaChatReply) => {
+				console.log("Posting Ollama response to webview");
+
+				if(!this._panel) {
+					console.debug("No panel to post to");
+                    return;
+				}
+
+                console.debug("Posting a meessage to the panel");
+
+				// send the webpanel a message
+				this._panel?.webview.postMessage({
+					command: 'ollamaResponse',
+					overview: reply.overview,
+					text: "GOT IT",
+					suggestions: reply.suggestions
+				});
+
+			})
+			.catch((error: any) => {
+				console.error(error);
+			});
+
     }
 
-    private _getOpeningHtml(): string {
+    private _getOpeningHtml(codeLanguage: string, originalCode: string): string {
 
         const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
         
         if (!editor) {
             return "<H1>NO OPEN EDITOR</H1>";
         }
-
-        // Get the original code from the active document
-		const { codeLanguage, originalCode } = this._getOriginalCode(editor);
 
         // make a model from the information we've collected
         const pageModel = this._getPageModel(codeLanguage, originalCode);
@@ -71,35 +99,6 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
 
     public dispose(): void {
         console.debug("Disposing webview");
-    }
-
-/**
-     * Get the original code from the active document.
-     * Values can be:
-     * - The selected text if any.
-     * - The entire document text if no text is selected.
-     * @param editor The active text editor.
-     */
-    private _getOriginalCode(editor: vscode.TextEditor): { codeLanguage: string; originalCode: string; } {
-
-        let code: string = "No active document.";
-        let codeLanguage: string = '';
-
-        const document = editor.document;
-        if (!document) {
-            return { codeLanguage, originalCode: code };
-        }
-
-        const selection = editor.selection;
-        codeLanguage = editor.document.languageId;
-
-        // Get the selected text if any, otherwise, get the entire document text
-        if (selection.isEmpty) {
-            code = document.getText();
-        } else {
-            code = document.getText(selection);
-        }
-        return { codeLanguage, originalCode: code };
     }
 
     /**
