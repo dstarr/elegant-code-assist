@@ -33,23 +33,23 @@ export class SendCodeCommand implements Command {
 		// create a webview panel provider
 		console.debug(`Command ${this.name} executed`);
 
-		const codeWebViewProvider: CodeWebViewProvider = new CodeWebViewProvider(this._context);
-		
-		this._context.subscriptions.push(
-			vscode.window.registerWebviewViewProvider(CodeWebViewProvider.viewType, codeWebViewProvider)
-		);
-		
-		// get the active text editor
+		// ensure there is an active text editor
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			vscode.window.showErrorMessage("No active document.");
 			return;
 		}
 
+		// create a webview panel provider
+		const codeWebViewProvider: CodeWebViewProvider = new CodeWebViewProvider(this._context);
+		this._context.subscriptions.push(
+			vscode.window.registerWebviewViewProvider(CodeWebViewProvider.viewType, codeWebViewProvider)
+		);
+		
 		// get the original code from the active document
 		const { codeLanguage, originalCode } = this._getOriginalCode(editor);
 
-		codeWebViewProvider.show(originalCode, codeLanguage);
+		codeWebViewProvider.show(codeLanguage, originalCode);
 	}
 
 	/**

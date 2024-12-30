@@ -1,4 +1,3 @@
-`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +15,7 @@
             line-height: 1.5;
         }
     </style>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' https://cdnjs.cloudflare.com; script-src 'self' https://cdnjs.cloudflare.com;">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 </head>
@@ -41,8 +40,7 @@
     
         // Listen for messages from the VS Code extension
         window.addEventListener('message', event => {
-            console.debug('Received message:', event);
-            alert('Received message:', event);
+            console.log('Received message:', event);
         });
     
     </script>

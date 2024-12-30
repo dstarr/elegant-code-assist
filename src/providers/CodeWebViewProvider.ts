@@ -38,14 +38,14 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
                 }
             );
 
-            this._panel.webview.html = this._getOpeningHtml(originalCode, codeLanguage);
+            this._panel.webview.html = this._getOpeningHtml(codeLanguage, originalCode);
 
             this._panel.onDidDispose(() => {
                 this._panel = undefined;
             });
         }
 
-        // this.addOllamaResponse(originalCode, codeLanguage);
+        this.addOllamaResponse(originalCode, codeLanguage);
     }
 
     public addOllamaResponse(codeLanguage: string, originalCode: string): void {
@@ -57,18 +57,17 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
 		
         ollamaChatService.chat(originalCode, codeLanguage)
 			.then((reply: OllamaChatReply) => {
-				console.log("Posting Ollama response to webview");
 
 				if(!this._panel) {
 					console.debug("No panel to post to");
                     return;
 				}
 
-                console.debug("Posting a meessage to the panel");
+				console.log("Posting Ollama response to panel");
 
 				// send the webpanel a message
-				this._panel?.webview.postMessage({
-					command: 'ollamaResponse',
+				this._panel.webview.postMessage({
+					command: 'message',
 					overview: reply.overview,
 					text: "GOT IT",
 					suggestions: reply.suggestions
