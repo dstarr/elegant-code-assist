@@ -23,7 +23,7 @@
     "commands": [
       {
         "command": "ecassist.sendCode",
-        "title": "Send to Ollama",
+        "title": "Send code to Ollama",
         "category": "EC"
       },
       {
@@ -43,11 +43,6 @@
           "id": "ecassist.modelsView",
           "name": "Ollama Models",
           "type": "tree"
-        },
-        {
-          "id": "ecassist.codeView",
-          "name": "Elegant Code Assist",
-          "type": "webview"
         }
       ]
     },

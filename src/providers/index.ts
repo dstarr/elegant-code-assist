@@ -1,2 +1,3 @@
 export { ShowModelsProvider } from "./ShowModelsProvider";
-export { ProviderRegistrar } from "./ProviderRegistrar";
+export { ProviderBuilder } from "./ProviderBuilder";
+export { CodeWebViewProvider } from './CodeWebViewProvider';

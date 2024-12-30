@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CommandRegistrar } from './commands/CommandRegistrar';
-import { ProviderRegistrar, ShowModelsProvider } from './providers';
+import { ProviderBuilder } from './providers';
 
 /**
  * This method is called when your extension is activated
@@ -11,25 +11,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	console.log('Congratulations, EC Code Assist" is now active!');
 
-	initializeDataProviders(context);
+	// registering providers for the extension
+	const providerBuilder: ProviderBuilder = new ProviderBuilder(context);
+	providerBuilder.buildProviders();
 
 	// Register the command events for the extension
 	const commandRegistrar = new CommandRegistrar();
 	commandRegistrar.registerCommandEvents(context);
 }
 
-/**
- * Initialize the data providers for the extension
- */
-function initializeDataProviders(context: vscode.ExtensionContext): void {
-
-	// Initialize the provider registrar to be used for registering the data providers
-	const providerRegistrar = new ProviderRegistrar(context);
-	
-	// Initialize the data provider for the models tree view
-	const showModelsProvider = new ShowModelsProvider(context);
-	providerRegistrar.registerModelTreeProvider(showModelsProvider);
-}
 
 /** 
  * Called when the extension is deactivated

@@ -36,7 +36,7 @@ class FilePathGenerator {
             SystemPromptPath: path.join(resourcesPath, 'prompts', 'systemPrompt.txt'),
             PromptJsonPath: path.join(resourcesPath, 'prompts', 'promptTemplate.json'),
             LastChatRequestPath: path.join(resourcesPath, 'lastChatRequest.json'),
-            WebView: path.join(resourcesPath, 'webviews', 'webView.html'),
+            WebView: path.join(resourcesPath, 'webviews', 'code-display.html'),
         };
     }
 

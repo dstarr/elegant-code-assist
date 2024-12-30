@@ -1,12 +1,12 @@
-import { ShowModelsProvider } from "./ShowModelsProvider";
+import { CodeWebViewProvider, ShowModelsProvider } from "./index";
 import * as vscode from 'vscode';
 import { STATE_MANAGEMENT, VIEWS } from '../util/Constants';
 
 /**
  * Class for registering the providers for the extension.
  */
-export class ProviderRegistrar {
-
+export class ProviderBuilder {
+	
     private readonly _context: vscode.ExtensionContext;
 
     /**
@@ -18,13 +18,19 @@ export class ProviderRegistrar {
         this._context = context;
     }
 
+    public buildProviders(): void {
+        this._registerModelTreeProvider();
+	}
+
     /**
      * Register the model tree provider and configure the tree view events.
      * @param showModelsProvider The provider for showing the models.
      */
-    public registerModelTreeProvider(showModelsProvider: ShowModelsProvider): void {
+    private _registerModelTreeProvider(): void {
 
         console.debug(`Provider ShowModelsProvider registering`);
+
+        const showModelsProvider: ShowModelsProvider = new ShowModelsProvider(this._context);
 
         // Create the tree view
         const treeView = vscode.window.createTreeView(VIEWS.MODELS_TREE_VIEW, {

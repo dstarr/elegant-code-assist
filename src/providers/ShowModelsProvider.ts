@@ -55,8 +55,7 @@ export class ShowModelsProvider implements vscode.TreeDataProvider<vscode.TreeIt
                             });
                     }
                     
-                    // put a chat icon next to the active model
-                    vscode.window.showInformationMessage(`Active model: ${storedModel}` );
+                    console.debug(`Active model: ${storedModel}`);
 
                     models.forEach(model => {
                         let treeViewItem = new vscode.TreeItem(model.name);
