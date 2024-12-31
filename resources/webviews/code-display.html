@@ -15,7 +15,9 @@
             line-height: 1.5;
         }
     </style>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' https://cdnjs.cloudflare.com; script-src 'self' https://cdnjs.cloudflare.com;">
+    <!-- meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' https://cdnjs.cloudflare.com; script-src 'self' https://cdnjs.cloudflare.com;" -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{webviewCspSource}}; script-src 'nonce-{{nonce}}';">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 </head>
