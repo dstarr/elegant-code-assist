@@ -11,9 +11,6 @@
         font-src 'self' vscode-resource:; 
         connect-src 'self';
     ">
-
-
-
     <link rel="stylesheet" href="{{highlightJsCssUri}}">
     <script src="{{highlightJsUri}}"></script>
     <script src="{{mainJsUri}}"></script>
@@ -36,12 +33,7 @@
 
     <div id="ecassist_webview_chatReply"></div>
 
-    <script nonce="{{nonce}}">
-
-        hljs.highlightAll();
-
-
-    </script>
+    <script nonce="{{nonce}}">hljs.highlightAll();</script>
 </body>
 
 </html>

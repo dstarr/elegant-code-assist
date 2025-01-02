@@ -98,11 +98,6 @@ export default class HtmlBuilder {
         html = html.replace(/{{codeLanguage}}/g, pageModel.language);
         html = html.replace(/{{nonce}}/g, getNonce()); // replace the nonce in the script tag
 
-        // write out the htmkl as a file so we can debug it
-        const fs = require('fs');
-        const path = vscode.Uri.joinPath(extensionUri, 'resources', 'webviews', 'code-display-last.html').fsPath;
-        fs.writeFileSync(path, html);
-
         return html;
     }
 
