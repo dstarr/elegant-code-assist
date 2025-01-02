@@ -24,6 +24,8 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
 
     public show(codeLanguage: string, originalCode: string) {
 
+        console.debug("Showing webview");
+
         if (this._panel) {
             this._panel.webview.html = this._getOpeningHtml(codeLanguage, originalCode);
             this._panel.reveal();
@@ -40,10 +42,27 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
 
             this._panel.webview.html = this._getOpeningHtml(codeLanguage, originalCode);
 
+            // Handle messages from the webview
+            this._panel.webview.onDidReceiveMessage((message) => {
+                  console.debug("Received message from webview:", message);
+                },
+                undefined,
+                this._context.subscriptions
+            );
+
             this._panel.onDidDispose(() => {
                 this._panel = undefined;
             });
+
+
         }
+
+        // send the webpanel a message
+        console.debug("Sending message to webview");
+        this._panel.webview.postMessage({
+            command: 'message',
+            text: "GOT IT",
+        });
 
         this.addOllamaResponse(originalCode, codeLanguage);
     }
@@ -88,16 +107,13 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
             return "<H1>NO OPEN EDITOR</H1>";
         }
 
-        // make a model from the information we've collected
-        // const pageModel = this._getPageModel(codeLanguage, originalCode); 
-
         // get the html to show in the webview panel
         const htmlBuilder: HtmlBuilder = new HtmlBuilder(this._context);
+        const webView: vscode.Webview | undefined = this._panel?.webview;
+        const pageModel: PageModel = this._getPageModel(codeLanguage, originalCode);
 
-        const webView = this._panel?.webview;
-
-        if (webView !== undefined) {
-            return htmlBuilder.getHtmlForShowCodeWebviewPanel(webView);
+        if (webView) {
+            return htmlBuilder.getWebViewHtml(pageModel, webView);
         }
         else {
             return '<h1>NO WEBVIEW</h1>';

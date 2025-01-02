@@ -42,7 +42,7 @@ class FilePathGenerator {
 
     private _getResourcesPath(context: vscode.ExtensionContext): string {
         
-        return vscode.Uri.file(path.join(context.extensionPath, 'src', 'resources'))
+        return vscode.Uri.file(path.join(context.extensionPath, 'resources'))
             .with({ scheme: 'vscode-resource' })
             .fsPath;
     }
