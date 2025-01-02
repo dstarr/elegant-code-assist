@@ -3,30 +3,20 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elegant Code Assist</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-        }
-
-        p {
-            font-size: 16px;
-            line-height: 1.5;
-        }
-    </style>
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'none'; 
-        script-src 'self' 'nonce-{{nonce}}' vscode-resource:;
-        style-src 'self' vscode-resource: 'unsafe-inline' 'nonce-{{nonce}}'; 
+        script-src 'self' vscode-resource: https://*.vscode-cdn.net 'nonce-{{nonce}}';
+        style-src 'self' vscode-resource: https://*.vscode-cdn.net 'unsafe-inline'; 
         img-src 'self' vscode-resource: data:; 
-        font-src 'self' vscode-resource:;
+        font-src 'self' vscode-resource:; 
         connect-src 'self';
     ">
 
+
+
     <link rel="stylesheet" href="{{highlightJsCssUri}}">
-    <script href="{{highlightJsUri}}"></script>
-    <script href="{{mainJsUri}}"></script>
+    <script src="{{highlightJsUri}}"></script>
+    <script src="{{mainJsUri}}"></script>
 </head>
 
 <body>
@@ -50,17 +40,7 @@
 
         // hljs.highlightAll();
 
-        window.addEventListener('message', event => {
-            const message = event.data; // The json data that the extension sent
-            console.log('message data:', event.data);
-        });
 
-        // Example of sending a message to the extension
-        const vscode = acquireVsCodeApi();
-        vscode.postMessage({
-            command: 'alert',
-            text: 'Hello from the webview!'
-        });
     </script>
 </body>
 

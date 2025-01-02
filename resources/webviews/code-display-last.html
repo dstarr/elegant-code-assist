@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Code Assist</title>
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none'; 
+        script-src 'self' vscode-resource: https://*.vscode-cdn.net 'nonce-9YUCat5KMiDYyZDMzYZGSw6mhPjEeGCc';
+        style-src 'self' vscode-resource: https://*.vscode-cdn.net 'unsafe-inline'; 
+        img-src 'self' vscode-resource: data:; 
+        font-src 'self' vscode-resource:; 
+        connect-src 'self';
+    ">
+
+
+
+    <link rel="stylesheet" href="https://file%2B.vscode-resource.vscode-cdn.net/Users/david/projects/elegant-code-assist/resources/scripts/11.9.0-highlight.min.css">
+    <script src="https://file%2B.vscode-resource.vscode-cdn.net/Users/david/projects/elegant-code-assist/resources/scripts/11.9.0-highlight.min.js"></script>
+    <script src="https://file%2B.vscode-resource.vscode-cdn.net/Users/david/projects/elegant-code-assist/resources/scripts/main.js"></script>
+</head>
+
+<body>
+    <h1>Elegant Code Assist</h1>
+
+    <p>This extension has a long way to go.</p>
+
+    <p>Used model: codellama:latest</p>
+
+    <h2>Original code:</h2>
+
+<pre><code class="javascript">
+const url = "https://elegantcode.com";
+console.log("URL: ", url);
+// export { fetch };
+console.log("BEFORE CALLING fetch");
+let html = '';
+await fetch(url)
+    .then((response) => {
+    return response.statusText;
+})
+    .then((html) => {
+    console.log("GOT THE HTML: ", html);
+});
+console.log("AFTER CALLING fetch");
+export {};
+
+</code></pre>
+
+    <h2>Model reply:</h2>
+
+    <div id="ecassist_webview_chatReply"></div>
+
+    <script nonce="9YUCat5KMiDYyZDMzYZGSw6mhPjEeGCc">
+
+        // hljs.highlightAll();
+
+
+    </script>
+</body>
+
+</html>
