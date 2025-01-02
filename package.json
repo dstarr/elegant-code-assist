@@ -30,11 +30,6 @@
         "command": "ecassist.showWorkspaceState",
         "title": "Show Workspace State",
         "category": "EC"
-      },
-      {
-        "command": "ecassist.sendCodeWebviewUpdate",
-        "title": "Send update to webview",
-        "category": "EC"
       }
     ],
     "views": {
@@ -52,9 +47,6 @@
         {
           "command": "ecassist.sendCode",
           "when": "editorTextFocus"
-        },
-        {
-          "command": "ecassist.sendCodeWebviewUpdate"
         }
       ]
     }
