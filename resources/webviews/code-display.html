@@ -13,6 +13,7 @@
     ">
     <link rel="stylesheet" href="{{highlightJsCssUri}}">
     <script src="{{highlightJsUri}}"></script>
+    <script src="{{jQueryUri}}"></script>
     <script src="{{mainJsUri}}"></script>
 </head>
 
@@ -31,7 +32,9 @@
 
     <h2>Model reply:</h2>
 
-    <div id="ecassist_webview_chatReply"></div>
+    <div id="ecassist_webview_chatReply">
+        <p>Waiting for model reply...</p>
+    </div>
 
     <script nonce="{{nonce}}">hljs.highlightAll();</script>
 </body>

@@ -85,6 +85,7 @@ export default class HtmlBuilder {
         const mainJsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'resources', 'scripts', 'main.js'));
         const highlightJsCssUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'resources', 'scripts', '11.9.0-highlight.min.css'));
         const highlightJsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'resources', 'scripts', '11.9.0-highlight.min.js'));
+        const jQueryUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'resources', 'scripts', 'jquery-3.7.1.min.js'));
 
         // make the token replacements in the chat response
         let html = ResourceReader.getWebView(this._context);
@@ -92,6 +93,7 @@ export default class HtmlBuilder {
         html = html.replace('{{mainJsUri}}', mainJsUri.toString());
         html = html.replace('{{highlightJsCssUri}}', highlightJsCssUri.toString());
         html = html.replace('{{highlightJsUri}}', highlightJsUri.toString());
+        html = html.replace('{{jQueryUri}}', jQueryUri.toString());
 
         html = html.replace('{{model}}', pageModel.model);
         html = html.replace('{{originalCode}}', pageModel.originalCode);

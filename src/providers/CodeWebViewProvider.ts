@@ -57,17 +57,10 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
 
         }
 
-        // send the webpanel a message
-        console.debug("Sending message to webview");
-        this._panel.webview.postMessage({
-            command: 'message',
-            text: "GOT IT",
-        });
-
-        this.addOllamaResponse(originalCode, codeLanguage);
+        this._addOllamaResponse(originalCode, codeLanguage);
     }
 
-    public addOllamaResponse(codeLanguage: string, originalCode: string): void {
+    private _addOllamaResponse(codeLanguage: string, originalCode: string): void {
 
         console.debug("Getting Ollama response");
 
@@ -86,9 +79,8 @@ export class CodeWebViewProvider implements vscode.WebviewViewProvider {
 
                 // send the webpanel a message
                 this._panel.webview.postMessage({
-                    command: 'message',
+                    command: 'ollamaResponse',
                     overview: reply.overview,
-                    text: "GOT IT",
                     suggestions: reply.suggestions
                 });
 
