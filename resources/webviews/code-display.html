@@ -15,11 +15,18 @@
             line-height: 1.5;
         }
     </style>
-    <!-- meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' https://cdnjs.cloudflare.com; script-src 'self' https://cdnjs.cloudflare.com;" -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{webviewCspSource}}; script-src 'nonce-{{nonce}}';">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none'; 
+        script-src 'self' 'nonce-{{nonce}}' vscode-resource:;
+        style-src 'self' vscode-resource: 'unsafe-inline' 'nonce-{{nonce}}'; 
+        img-src 'self' vscode-resource: data:; 
+        font-src 'self' vscode-resource:;
+        connect-src 'self';
+    ">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="{{highlightJsCssUri}}">
+    <script href="{{highlightJsUri}}"></script>
+    <script href="{{mainJsUri}}"></script>
 </head>
 
 <body>
@@ -31,22 +38,30 @@
 
     <h2>Original code:</h2>
 
-    <pre><code class="{{codeLanguage}}">{{originalCode}}</code></pre>
+<pre><code class="{{codeLanguage}}">
+{{originalCode}}
+</code></pre>
 
     <h2>Model reply:</h2>
 
     <div id="ecassist_webview_chatReply"></div>
 
-    <script>
-        hljs.highlightAll();
-    
-        // Listen for messages from the VS Code extension
-        window.addEventListener('message', event => {
-            console.log('Received message:', event);
-        });
-    
-    </script>
+    <script nonce="{{nonce}}">
 
+        // hljs.highlightAll();
+
+        window.addEventListener('message', event => {
+            const message = event.data; // The json data that the extension sent
+            console.log('message data:', event.data);
+        });
+
+        // Example of sending a message to the extension
+        const vscode = acquireVsCodeApi();
+        vscode.postMessage({
+            command: 'alert',
+            text: 'Hello from the webview!'
+        });
+    </script>
 </body>
 
 </html>

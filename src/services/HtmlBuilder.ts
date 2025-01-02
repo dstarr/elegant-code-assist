@@ -77,16 +77,31 @@ export default class HtmlBuilder {
      * @param { PageModel } pageModel 
      * @returns 
      */
-    public getWebViewHtml(pageModel: PageModel): string {
+    public getWebViewHtml(pageModel: PageModel, webview: vscode.Webview): string {
+
+        const extensionUri = this._context.extensionUri;
+
+        // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
+        const mainJsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'resources', 'scripts', 'main.js'));
+        const highlightJsCssUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'resources', 'scripts', '11.9.0-highlight.min.css'));
+        const highlightJsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'resources', 'scripts', '11.9.0-highlight.min.js'));
 
         // make the token replacements in the chat response
         let html = ResourceReader.getWebView(this._context);
 
+        html = html.replace('{{mainJsUri}}', mainJsUri.toString());
+        html = html.replace('{{highlightJsCssUri}}', highlightJsCssUri.toString());
+        html = html.replace('{{highlightJsUri}}', highlightJsUri.toString());
+
         html = html.replace('{{model}}', pageModel.model);
         html = html.replace('{{originalCode}}', pageModel.originalCode);
-        html = html.replace('{{language}}', pageModel.language);
-        html = html.replace('{{webviewCspSource}}', pageModel.webviewCspSource);
-        html = html.replace('{{nonce}}', getNonce());
+        html = html.replace(/{{codeLanguage}}/g, pageModel.language);
+        html = html.replace(/{{nonce}}/g, getNonce()); // replace the nonce in the script tag
+
+        // write out the htmkl as a file so we can debug it
+        const fs = require('fs');
+        const path = vscode.Uri.joinPath(extensionUri, 'resources', 'webviews', 'code-display-last.html').fsPath;
+        fs.writeFileSync(path, html);
 
         return html;
     }
