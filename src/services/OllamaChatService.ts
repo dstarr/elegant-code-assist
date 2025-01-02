@@ -8,18 +8,19 @@ import { STATE_MANAGEMENT } from "../util/Constants";
  */
 export class OllamaChatReply {
 
-    public overview: string | undefined;
-
-    public suggestions: string[] | undefined;
+    public readonly overview: string
+    public readonly suggestions: Suggestion[];
+    public readonly language: string;
 
     /**
      * Constructor.
      * @param overview 
      * @param suggestions 
      */
-    constructor(overview: string | undefined, suggestions: string[] | undefined) {
+    constructor(overview: string, suggestions: Suggestion[], language: string) {
         this.overview = overview;
         this.suggestions = suggestions;
+        this.language = language;
     }
 
     /**
@@ -27,10 +28,20 @@ export class OllamaChatReply {
      * @param unparsedReply A string that contains the raw reply from Ollama.
      * @returns {OllamaChatReply} The chat reply object.
      */
-    public static fromJson(unparsedReply: string): OllamaChatReply {
+    public static fromJson(unparsedReply: string, language: string): OllamaChatReply {
         const json = JSON.parse(unparsedReply);
-        return new OllamaChatReply(json.overview, json.suggestions);
+        
+        if (!json.overview || !json.suggestions) {
+            throw new Error("Invalid reply format");
+        }
+
+        return new OllamaChatReply(json.overview, json.suggestions, language);
     }
+}
+
+interface Suggestion {
+    exmplanation: string;
+    codeExample: string;
 }
 
 /**
@@ -56,7 +67,10 @@ export default class OllamaChatService {
             const response = await ollama.chat(chatRequest);
             const reply = response.message.content;
 
-            return OllamaChatReply.fromJson(reply);
+            console.debug("Ollama response: " + reply);
+
+            // Parse the reply into an OllamaChatReply object
+            return OllamaChatReply.fromJson(reply, codeLanguage);
 
         } catch (error) {
             console.error(error);

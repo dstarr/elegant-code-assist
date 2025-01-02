@@ -8,26 +8,25 @@ window.addEventListener('message', event => {
             // Update the webview with the message
             const html = parseOllamaResonseToHtml(message);
             $('#ecassist_webview_chatReply').html(html);
+            hljs.highlightAll();
             break;
     }
 
 });
 
-// Example of sending a message to the extension
-const vscode = acquireVsCodeApi();
-vscode.postMessage({
-    command: 'alert',
-    text: 'Hello from the webview!'
-});
-
-function parseOllamaResonseToHtml(reply) {
-
-    const overview = JSON.stringify(reply.overview).replace(/^"|"$/g, '');;
-
+function parseOllamaResonseToHtml(reply, language) {
 
     // build the overview message using JQuery
     var $message = $('<div></div>');
-        $message.append(`<p>${overview}</p>`);
+        $message.append(`<p>${reply.overview}</p>`);
+    
+    reply.suggestions.forEach(suggestion => {
+        $div = $('<div></div>');
+        $div.append(`<p class="suggestion">${suggestion.explanation}</p>`);
+        $div.append(`<pre><code class="${language}">${suggestion.codeExample}</code></pre>`);
+
+        $message.append($div);
+    });
 
     // build the detailed message using JQuery
 
