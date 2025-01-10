@@ -15,9 +15,13 @@ Consider the following when reviewing the user's code:
 In the JSON of the response follow these rules:
 
 - 'codeExample' properties should only contain code.
-- 'codeExample' properties should not contain markdown.
+- 'codeExample' properties should not contain markdown syntax.
 - 'codeExample' properties should only contain suggested changes to the original code.
-- 'codeExample' properties should contain at least 3 lines of code to provide context.
+- 'codeExample' properties should always contain at least 3 lines of code.
+- 'codeExample' properties should never be empty. If empty, do not return the suggestion.
 - 'explanation' property should use HTML
 - 'explanation' property should always be populated.
-- 'responseOverview' property should contain a summary of all suggestions.
+- 'overview' property should contain a summary of all suggestions in HTML.
+- If 'overview' property is empty, return the string 'No suggestions'.
+- If there are no results for 'explanation' or 'codeExample' in a suggestion, do not return the suggestion.
+
